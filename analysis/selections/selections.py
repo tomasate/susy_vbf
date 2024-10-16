@@ -5,7 +5,7 @@ import awkward as ak
 import importlib.resources
 from coffea.lumi_tools import LumiMask
 from coffea.analysis_tools import PackedSelection
-from analysis.helpers import working_points 
+from analysis.helpers import working_points
 from analysis.helpers.trigger import trigger_match
 
 
@@ -30,17 +30,6 @@ def object_selector(events, object_selection_config):
                 selection_mask = np.logical_and(selection_mask, mask)
             objects[obj_name] = objects[obj_name][selection_mask]
     return objects
-
-
-def event_selector(events, processor_config):
-    hlt_paths = processor_config.hlt_paths
-    goldenjson = processor_config.goldenjson
-    event_selection_config = processor_config.event_selection
-    
-    selections = PackedSelection()
-    for selection, str_mask in event_selection_config.items():
-        selections.add(selection, eval(str_mask))
-    return selections
 
 
 def select_dimuons(muons):
@@ -91,15 +80,16 @@ def get_lumi_mask(events, lumimask, is_mc):
         lumi_mask = lumi_info(events.run, events.luminosityBlock)
     return lumi_mask
 
-def get_trigger_mask(events, hlt_paths): 
+
+def get_trigger_mask(events, hlt_paths):
     trigger_mask = np.zeros(len(events), dtype="bool")
     trigger_match_mask = np.zeros(len(events), dtype="bool")
     for hlt_path in hlt_paths:
-         if hlt_path in events.HLT.fields:
-                trigger_mask = trigger_mask | events.HLT[hlt_path]
+        if hlt_path in events.HLT.fields:
+            trigger_mask = trigger_mask | events.HLT[hlt_path]
     return trigger_mask
-                
-    
+
+
 def get_trigger_match_mask(events, hlt_paths, lepton="Muon"):
     trigger_match_mask = np.zeros(len(events), dtype="bool")
     for hlt_path in hlt_paths:
@@ -113,9 +103,7 @@ def get_trigger_match_mask(events, hlt_paths, lepton="Muon"):
 
 
 def get_metfilters_mask(events, is_mc, year):
-    with importlib.resources.path(
-        "analysis.data", "metfilters.json"
-    ) as path:
+    with importlib.resources.path("analysis.data", "metfilters.json") as path:
         with open(path, "r") as handle:
             metfilters = json.load(handle)[year]
     metfilters_mask = np.ones(len(events), dtype="bool")
@@ -124,6 +112,7 @@ def get_metfilters_mask(events, is_mc, year):
         if mf in events.Flag.fields:
             metfilters_mask = metfilters_mask & events.Flag[mf]
     return metfilters_mask
+
 
 def get_stitching_mask(events, dataset, dataset_key, ht_value):
     stitching_mask = np.ones(len(events), dtype="bool")
