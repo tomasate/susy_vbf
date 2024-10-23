@@ -4,6 +4,7 @@ from pathlib import Path
 from condor import submit_condor
 from utils import get_output_directory
 from analysis.fileset import divide_list
+from analysis.helpers.misc import get_output_directory
 
 
 def main(args):
