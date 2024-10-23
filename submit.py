@@ -7,7 +7,7 @@ from analysis.processors.ztojets import ZToJets
 
 def main(args):
     processors = {
-        "ztojets": ZToJets(year=args.year),
+        "ztojets": ZToJets(year=args.year, flow=eval(args.flow)),
     }
     t0 = time.monotonic()
     out = processor.run_uproot_job(
@@ -58,6 +58,13 @@ if __name__ == "__main__":
         dest="output_path",
         type=str,
         help="output path",
+    )
+    parser.add_argument(
+        "--flow",
+        dest="flow",
+        type=str,
+        default="True",
+        help="whether to include underflow/overflow to first/last bin {True, False}",
     )
     args = parser.parse_args()
     main(args)
