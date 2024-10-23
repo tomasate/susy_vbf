@@ -39,11 +39,10 @@ def main(args):
             args["dataset_key"] = args["dataset"]
             args["partition_fileset"] = {args["dataset"]: partition}
         else:
-            dataset_key = f'{args["dataset"]}_{i}'
             args["nsample"] = i
+            dataset_key = f'{args["dataset"]}_{i}'
             args["dataset_key"] = dataset_key
             args["partition_fileset"] = {dataset_key: partition}
-
         submit_condor(args, submit=submit)
 
 
@@ -72,27 +71,6 @@ if __name__ == "__main__":
         help="year of the data {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)",
     )
     parser.add_argument(
-        "--nfiles",
-        dest="nfiles",
-        type=int,
-        default=1,
-        help="number of .root files to be processed by sample. To run all files use -1 (default 1)",
-    )
-    parser.add_argument(
-        "--syst",
-        dest="syst",
-        type=str,
-        default="nominal",
-        help="systematic to apply {'nominal'}",
-    )
-    parser.add_argument(
-        "--nsample",
-        dest="nsample",
-        type=str,
-        default="",
-        help="partitions to run (--nsample 1,2,3 will only run partitions 1,2 and 3)",
-    )
-    parser.add_argument(
         "--flow",
         dest="flow",
         type=str,
@@ -103,7 +81,7 @@ if __name__ == "__main__":
         "--submit",
         dest="submit",
         type=str,
-        default="False",
+        default="True",
         help="if True submit job to Condor. If False, it just builds datasets and condor files",
     )
     parser.add_argument(
@@ -117,7 +95,7 @@ if __name__ == "__main__":
         "--eos",
         dest="eos",
         type=str,
-        default="False",
+        default="True",
         help="if True save outputs to /eos",
     )
     args = parser.parse_args()
