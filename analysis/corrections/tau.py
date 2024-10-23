@@ -8,8 +8,9 @@ from typing import Type
 from pathlib import Path
 from .utils import unflat_sf
 from coffea.analysis_tools import Weights
+from analysis.working_points import working_points
 from analysis.corrections.utils import pog_years, get_pog_json
-from analysis.helpers.self.working_points import WorkingPoints
+
 
 """
 TauID corrections
@@ -60,7 +61,7 @@ class TauCorrector:
         self.taus_genMatch = self.taus.genPartFlav
         self.taus_dm = self.taus.decayMode
 
-        self.working_points = WorkingPoints()
+        self.working_points = working_points
         self.wp_map = {
             element.lower(): element
             for element in [
