@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 from pathlib import Path
 
@@ -31,7 +32,11 @@ def get_command(args: dict) -> str:
         if args[arg]:
             if arg in ["dataset", "nsample"]:
                 continue
-            cmd += f" --{arg} {args[arg]}"
+            elif arg == "partition_fileset":
+                partition_fileset = args["partition_fileset"]
+                cmd += f" --partition_fileset '{json.dumps(partition_fileset)}' "
+            else:
+                cmd += f" --{arg} {args[arg]}"
     return cmd
 
 
