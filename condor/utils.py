@@ -29,7 +29,7 @@ def get_command(args: dict) -> str:
     cmd = f"python submit.py"
     for arg in args:
         if args[arg]:
-            if arg == "dataset":
+            if arg in ["dataset", "nsample"]:
                 continue
             cmd += f" --{arg} {args[arg]}"
     return cmd
