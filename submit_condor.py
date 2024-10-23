@@ -35,13 +35,12 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         "--processor",
         dest="processor",
         type=str,
         default="ztojets",
-        help="processor to be used {ztojets}",
+        help="processor to be used (default ztojets)",
     )
     parser.add_argument(
         "--dataset",
@@ -62,28 +61,28 @@ if __name__ == "__main__":
         dest="flow",
         type=str,
         default="True",
-        help="whether to include underflow/overflow to first/last bin {True, False}",
+        help="whether to include underflow/overflow to first/last bin {True, False} (default True)",
     )
     parser.add_argument(
         "--submit",
         dest="submit",
         type=str,
         default="True",
-        help="if True submit job to Condor. If False, it just builds datasets and condor files",
+        help="if True submit job to Condor. If False, it just builds datasets and condor files (default True)",
     )
     parser.add_argument(
         "--label",
         dest="label",
         type=str,
-        default="ZJets_CR",
-        help="Tag to recognize the run",
+        default="ztojets_CR",
+        help="Tag to label the run (default ztojets_CR)",
     )
     parser.add_argument(
         "--eos",
         dest="eos",
         type=str,
         default="True",
-        help="if True save outputs to /eos",
+        help="if True save outputs to /eos (default True)",
     )
     args = parser.parse_args()
     main(args)
