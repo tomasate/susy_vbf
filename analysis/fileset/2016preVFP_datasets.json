@@ -83,12 +83,6 @@
         "is_mc": true,
         "xsec": 6025.6
     },
-    "DYJetsToLL_M-4to50_HT-70to100": {
-        "process": "DYJetsToLL",
-        "query": "DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM",
-        "is_mc": true,
-        "xsec": null
-    },
     "DYJetsToLL_M-4to50_HT-100to200": {
         "process": "DYJetsToLL",
         "query": "DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v3/NANOAODSIM",
