@@ -59,8 +59,8 @@ class MuonCorrector:
 
     Parameters:
     -----------
-    muons:
-        muons collection
+    events:
+        events collection
     weights:
         Weights object from coffea.analysis_tools
     year:
@@ -75,23 +75,21 @@ class MuonCorrector:
 
     def __init__(
         self,
-        muons: ak.Array,
+        events,
         weights: Type[Weights],
         year: str = "2017",
         variation: str = "nominal",
         id_wp: str = "tight",
         iso_wp: str = "tight",
     ) -> None:
-        self.muons = muons
+        self.events = events
+        self.muons = events.Muon
         self.variation = variation
         self.id_wp = id_wp
         self.iso_wp = iso_wp
 
-        # muon array
-        self.muons = muons
-
         # flat muon array
-        self.m, self.n = ak.flatten(muons), ak.num(muons)
+        self.m, self.n = ak.flatten(self.muons), ak.num(self.muons)
 
         # weights container
         self.weights = weights
@@ -358,7 +356,7 @@ class MuonCorrector:
                 weight=nominal_sf,
             )
 
-    def add_triggeriso_weight(self, events, hlt_paths) -> None:
+    def add_triggeriso_weight(self, hlt_paths) -> None:
         """
         add muon Trigger Iso (IsoMu24 or IsoMu27) weights
 
@@ -371,20 +369,20 @@ class MuonCorrector:
             self.id_wp == "tight" and self.iso_wp == "tight"
         ), "there's only available muon trigger SF for 'tight' ID and Iso"
 
-        trigger_match_mask = np.zeros(len(events), dtype="bool")
+        trigger_match_mask = np.zeros(len(self.events), dtype="bool")
         for hlt_path in hlt_paths:
             trig_match = trigger_match(
-                leptons=events.Muon,
-                trigobjs=events.TrigObj,
+                leptons=self.muons,
+                trigobjs=self.events.TrigObj,
                 trigger_path=hlt_path,
             )
             trigger_match_mask = trigger_match_mask | trig_match
 
-        trigger_mask = np.zeros(len(events), dtype="bool")
+        trigger_mask = np.zeros(len(self.events), dtype="bool")
 
         for hlt_path in hlt_paths:
-            if hlt_path in events.HLT.fields:
-                trigger_mask = trigger_mask | events.HLT[hlt_path]
+            if hlt_path in self.events.HLT.fields:
+                trigger_mask = trigger_mask | self.events.HLT[hlt_path]
 
         # get 'in-limits' muons
         muon_pt_mask = (self.m.pt > 29.0) & (self.m.pt < 199.999)

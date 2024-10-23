@@ -87,19 +87,6 @@ class ZToJets(processor.ProcessorABC):
                 year=year,
             )
             # -------------------------------------------------------------
-            # object selection
-            # -------------------------------------------------------------
-            objects = object_selector(
-                events, self.processor_config.object_selection, year
-            )
-
-            # -------------------------------------------------------------
-            # event selection
-            # -------------------------------------------------------------
-            event_selection = PackedSelection()
-            for selection, str_mask in self.processor_config.event_selection.items():
-                event_selection.add(selection, eval(str_mask))
-            # -------------------------------------------------------------
             # event SF/weights computation
             # -------------------------------------------------------------
             # set weights container
@@ -154,7 +141,7 @@ class ZToJets(processor.ProcessorABC):
 
                 # muon corrector
                 muon_corrector = MuonCorrector(
-                    muons=events.Muon,
+                    events=events,
                     weights=weights_container,
                     year=year,
                     variation=syst_var,
@@ -172,10 +159,8 @@ class ZToJets(processor.ProcessorABC):
                 # add muon iso weights
                 muon_corrector.add_iso_weight()
                 # add trigger weights
-                muon_corrector.add_triggeriso_weight(
-                    events,
-                    hlt_paths,
-                )
+                muon_corrector.add_triggeriso_weight(hlt_paths)
+
                 # add tau weights
                 tau_corrector = TauCorrector(
                     events=events,
@@ -198,6 +183,19 @@ class ZToJets(processor.ProcessorABC):
             if syst_var == "nominal":
                 # save sum of weights before selections
                 output["metadata"].update({"sumw": ak.sum(weights_container.weight())})
+
+            # -------------------------------------------------------------
+            # object selection
+            # -------------------------------------------------------------
+            objects = object_selector(
+                events, self.processor_config.object_selection, year
+            )
+            # -------------------------------------------------------------
+            # event selection
+            # -------------------------------------------------------------
+            event_selection = PackedSelection()
+            for selection, str_mask in self.processor_config.event_selection.items():
+                event_selection.add(selection, eval(str_mask))
 
             region_cuts = self.processor_config.event_selection.keys()
             region_selection = event_selection.all(*region_cuts)
@@ -233,7 +231,6 @@ class ZToJets(processor.ProcessorABC):
                     feature_map[feature] = eval(axis_info["expression"])[
                         region_selection
                     ]
-
                 # -------------------------------------------------------------
                 # histogram filling
                 # -------------------------------------------------------------
