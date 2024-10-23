@@ -1,3 +1,4 @@
+import inspect
 import json
 import vector
 import numpy as np
@@ -9,7 +10,7 @@ from analysis.helpers import working_points
 from analysis.helpers.trigger import trigger_match
 
 
-def object_selector(events, object_selection_config):
+def object_selector(events, object_selection_config, year):
     # initialize dictionary to store analysis objects
     objects = {}
     for obj_name, obj_config in object_selection_config.items():
@@ -26,7 +27,14 @@ def object_selector(events, object_selection_config):
                 if "events" in str_mask or "objects" in str_mask:
                     mask = eval(str_mask)
                 else:
-                    mask = getattr(working_points, selection)(events, str_mask)
+                    signature = inspect.signature(getattr(working_points, selection))
+                    parameters = signature.parameters.keys()
+                    
+                    if "year" in parameters:
+                        mask = getattr(working_points, selection)(events, str_mask, year)
+                    else:
+                        mask = getattr(working_points, selection)(events, str_mask)
+                
                 selection_mask = np.logical_and(selection_mask, mask)
             objects[obj_name] = objects[obj_name][selection_mask]
     return objects
@@ -83,7 +91,7 @@ def get_lumi_mask(events, lumimask, is_mc):
 
 def get_trigger_mask(events, hlt_paths):
     trigger_mask = np.zeros(len(events), dtype="bool")
-    trigger_match_mask = np.zeros(len(events), dtype="bool")
+    
     for hlt_path in hlt_paths:
         if hlt_path in events.HLT.fields:
             trigger_mask = trigger_mask | events.HLT[hlt_path]
