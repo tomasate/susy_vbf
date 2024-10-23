@@ -2,27 +2,14 @@ import json
 import argparse
 from pathlib import Path
 from condor import submit_condor
+from utils import get_output_directory
 from analysis.fileset import divide_list
-from analysis.helpers.path_handler import Paths
-
-
-def get_output_directories(args: dict) -> str:
-    """builds output directories for data and metadata. Return output path"""
-    # get processor output path
-    paths = Paths(eval(args["eos"]))
-    processor_output_path = paths.processor_path(
-        processor_name=args["processor"],
-        dataset_year=args["year"],
-        label=args["label"],
-        mkdir=True,
-    )
-    return str(processor_output_path)
 
 
 def main(args):
     args = vars(args)
     submit = eval(args["submit"])
-    args["output_path"] = get_output_directories(args)
+    args["output_path"] = get_output_directory(args)
     del args["label"]
     del args["eos"]
     del args["submit"]
