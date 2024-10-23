@@ -1,5 +1,6 @@
 import json
 import time
+import pickle
 import argparse
 from coffea import processor
 from humanfriendly import format_timespan
