@@ -8,6 +8,19 @@ from coffea import processor
 from coffea.analysis_tools import PackedSelection, Weights
 from analysis.configs import load_config
 from analysis.histograms import HistBuilder, fill_histogram
+from analysis.corrections.jec import apply_jet_corrections
+from analysis.corrections.met import apply_met_phi_corrections
+from analysis.corrections.rochester import apply_rochester_corrections
+from analysis.corrections.tau_energy import apply_tau_energy_scale_corrections
+from analysis.corrections.pileup import add_pileup_weight
+from analysis.corrections.l1prefiring import add_l1prefiring_weight
+from analysis.corrections.pujetid import add_pujetid_weight
+from analysis.corrections.btag import BTagCorrector
+from analysis.corrections.muon import MuonCorrector
+from analysis.corrections.muon_highpt import MuonHighPtCorrector
+from analysis.corrections.tau import TauCorrector
+from analysis.corrections.electron import ElectronCorrector
+from analysis.corrections.jetvetomaps import jetvetomaps_mask
 from analysis.selections import (
     object_selector,
     get_lumi_mask,
@@ -28,7 +41,7 @@ class ZToJets(processor.ProcessorABC):
         self.flow = flow
 
         self.processor_config = load_config(
-            config_type="processor", config_name="ztojets", year="2017"
+            config_type="processor", config_name="ztojets", year=year
         )
         self.histogram_config = self.processor_config.histogram_config
         self.histograms = HistBuilder(self.histogram_config).build_histogram()
@@ -56,7 +69,36 @@ class ZToJets(processor.ProcessorABC):
             # -------------------------------------------------------------
             # object corrections
             # -------------------------------------------------------------
-            # TO DO
+            if is_mc:
+                # apply JEC/JER corrections to jets (in data, the corrections are already applied)
+                apply_jet_corrections(events, year)
+                # apply energy corrections to taus (only to MC)
+                apply_tau_energy_scale_corrections(
+                    events=events, year=year, variation=syst_var
+                )
+            # apply rochester corretions to muons
+            apply_rochester_corrections(
+                events=events, is_mc=is_mc, year=year, variation=syst_var
+            )
+            # apply MET phi modulation corrections
+            apply_met_phi_corrections(
+                events=events,
+                is_mc=is_mc,
+                year=year,
+            )
+            # -------------------------------------------------------------
+            # object selection
+            # -------------------------------------------------------------
+            objects = object_selector(
+                events, self.processor_config.object_selection, year
+            )
+
+            # -------------------------------------------------------------
+            # event selection
+            # -------------------------------------------------------------
+            event_selection = PackedSelection()
+            for selection, str_mask in self.processor_config.event_selection.items():
+                event_selection.add(selection, eval(str_mask))
             # -------------------------------------------------------------
             # event SF/weights computation
             # -------------------------------------------------------------
@@ -65,22 +107,97 @@ class ZToJets(processor.ProcessorABC):
             if is_mc:
                 # add gen weigths
                 weights_container.add("genweight", events.genWeight)
+                # add l1prefiring weigths
+                add_l1prefiring_weight(events, weights_container, year, syst_var)
+                # add pileup weigths
+                add_pileup_weight(events, weights_container, year, syst_var)
+                # add pujetid weigths
+                add_pujetid_weight(
+                    jets=events.Jet,
+                    weights=weights_container,
+                    year=year,
+                    working_point=self.processor_config.object_selection["jets"][
+                        "cuts"
+                    ]["jets_pileup"],
+                    variation=syst_var,
+                )
+                # b-tagging corrector
+                btag_corrector = BTagCorrector(
+                    events=events,
+                    weights=weights_container,
+                    sf_type="comb",
+                    worging_point=self.processor_config.object_selection["bjets"][
+                        "cuts"
+                    ]["jets_deepjet"],
+                    tagger="deepJet",
+                    year=year,
+                    full_run=False,
+                    variation=syst_var,
+                )
+                # add b-tagging weights
+                btag_corrector.add_btag_weights(flavor="bc")
+                btag_corrector.add_btag_weights(flavor="light")
+                # electron corrector
+                electron_corrector = ElectronCorrector(
+                    electrons=events.Electron,
+                    weights=weights_container,
+                    year=year,
+                )
+                # add electron ID weights
+                electron_corrector.add_id_weight(
+                    id_working_point=self.processor_config.object_selection[
+                        "electrons"
+                    ]["cuts"]["electrons_id"],
+                )
+                # add electron reco weights
+                electron_corrector.add_reco_weight()
 
+                # muon corrector
+                muon_corrector = MuonCorrector(
+                    muons=events.Muon,
+                    weights=weights_container,
+                    year=year,
+                    variation=syst_var,
+                    id_wp=self.processor_config.object_selection["muons"]["cuts"][
+                        "muons_id"
+                    ],
+                    iso_wp=self.processor_config.object_selection["muons"]["cuts"][
+                        "muons_iso"
+                    ],
+                )
+                # add muon RECO weights
+                muon_corrector.add_reco_weight()
+                # add muon ID weights
+                muon_corrector.add_id_weight()
+                # add muon iso weights
+                muon_corrector.add_iso_weight()
+                # add trigger weights
+                muon_corrector.add_triggeriso_weight(
+                    events,
+                    hlt_paths,
+                )
+                # add tau weights
+                tau_corrector = TauCorrector(
+                    events=events,
+                    weights=weights_container,
+                    year=year,
+                    tau_vs_jet=self.processor_config.object_selection["taus"]["cuts"][
+                        "taus_vs_jet"
+                    ],
+                    tau_vs_ele=self.processor_config.object_selection["taus"]["cuts"][
+                        "taus_vs_ele"
+                    ],
+                    tau_vs_mu=self.processor_config.object_selection["taus"]["cuts"][
+                        "taus_vs_mu"
+                    ],
+                    variation=syst_var,
+                )
+                tau_corrector.add_id_weight_deeptauvse()
+                tau_corrector.add_id_weight_deeptauvsmu()
+                tau_corrector.add_id_weight_deeptauvsjet()
             if syst_var == "nominal":
                 # save sum of weights before selections
                 output["metadata"].update({"sumw": ak.sum(weights_container.weight())})
-
-            # -------------------------------------------------------------
-            # object selection
-            # -------------------------------------------------------------
-            objects = object_selector(events, self.processor_config.object_selection)
-
-            # -------------------------------------------------------------
-            # event selection
-            # -------------------------------------------------------------
-            event_selection = PackedSelection()
-            for selection, str_mask in self.processor_config.event_selection.items():
-                event_selection.add(selection, eval(str_mask))
 
             region_cuts = self.processor_config.event_selection.keys()
             region_selection = event_selection.all(*region_cuts)
