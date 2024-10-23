@@ -117,10 +117,9 @@ class WorkingPoints:
         return decay_mode_mask
         
     
-    def jets_pileup(self, events, wp):
-        """
+    def jets_pileup(self, events, wp, year):
         puid_wps = {
-            "2016preVBP": {
+            "2016preVFP": {
                 "loose": events.Jet.puId == 1,
                 "medium": events.Jet.puId == 3,
                 "tight": events.Jet.puId == 7,
@@ -142,16 +141,9 @@ class WorkingPoints:
             }
         }
         return puid_wps[year][wp]
-        """
-        wps = {
-            "loose": events.Jet.puId == 4,
-            "medium": events.Jet.puId == 6,
-            "tight": events.Jet.puId == 7,
-        }
-        return wps[wp]
-    
-    def jets_deepjet(self, events, wp):
-        """
+        
+    def jets_deepjet(self, events, wp, year):
+        
         wps = {
             "2016preVFP": {
                 "loose": events.Jet.btagDeepFlavB > 0.0508,
@@ -175,10 +167,4 @@ class WorkingPoints:
             }
         }
         return wps[year][wp]
-        """
-        wps = {
-            "loose": events.Jet.btagDeepFlavB > 0.0532,
-            "medium": events.Jet.btagDeepFlavB > 0.304,
-            "tight": events.Jet.btagDeepFlavB > 0.7476
-        }
-        return wps[wp]
+        

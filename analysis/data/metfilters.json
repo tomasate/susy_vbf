@@ -1,5 +1,5 @@
 {
-    "2016APV": {
+    "2016preVFP": {
         "data": [
             "goodVertices",
             "globalSuperTightHalo2016Filter",
@@ -23,7 +23,7 @@
             "ecalBadCalibFilter"
         ]
     },
-    "2016": {
+    "2016postVFP": {
         "data": [
             "goodVertices",
             "globalSuperTightHalo2016Filter",
