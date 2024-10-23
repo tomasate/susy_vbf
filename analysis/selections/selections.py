@@ -6,11 +6,12 @@ import awkward as ak
 import importlib.resources
 from coffea.lumi_tools import LumiMask
 from coffea.analysis_tools import PackedSelection
-from analysis.helpers import working_points
 from analysis.helpers.trigger import trigger_match
+from analysis.helpers.working_points import WorkingPoints
 
 
 def object_selector(events, object_selection_config, year):
+    working_points = WorkingPoints()
     # initialize dictionary to store analysis objects
     objects = {}
     for obj_name, obj_config in object_selection_config.items():

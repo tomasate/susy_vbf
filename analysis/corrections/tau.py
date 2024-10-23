@@ -8,9 +8,8 @@ from typing import Type
 from pathlib import Path
 from .utils import unflat_sf
 from coffea.analysis_tools import Weights
-from analysis.helpers import working_points
 from analysis.corrections.utils import pog_years, get_pog_json
-
+from analysis.helpers.self.working_points import WorkingPoints
 
 """
 TauID corrections
@@ -61,6 +60,7 @@ class TauCorrector:
         self.taus_genMatch = self.taus.genPartFlav
         self.taus_dm = self.taus.decayMode
 
+        self.working_points = WorkingPoints()
         self.wp_map = {
             element.lower(): element
             for element in [
@@ -109,7 +109,7 @@ class TauCorrector:
         tau_genMatch_mask = (self.taus_genMatch == 1) | (self.taus_genMatch == 3)
         # Only taus passing the wp stablished
         tau_wp_mask = ak.flatten(
-            working_points.taus_vs_ele(self.events, self.tau_vs_ele)
+            self.working_points.taus_vs_ele(self.events, self.tau_vs_ele)
         )
         in_tau_mask = tau_genMatch_mask & tau_wp_mask  #  & tau_eta_mask
         # get 'in-limits' taus
@@ -174,7 +174,7 @@ class TauCorrector:
         # GenMatch = 0 "unmatched", 2 "muon";
         tau_genMatch_mask = (self.taus_genMatch == 2) | (self.taus_genMatch == 4)
         # Only taus passing the wp stablished
-        tau_wp_mask = ak.flatten(working_points.taus_vs_mu(self.events, self.tau_vs_mu))
+        tau_wp_mask = ak.flatten(self.working_points.taus_vs_mu(self.events, self.tau_vs_mu))
         in_tau_mask = tau_genMatch_mask & tau_wp_mask  # & tau_eta_mask
         # get 'in-limits' taus
         in_limit_taus = self.taus.mask[in_tau_mask]
@@ -249,7 +249,7 @@ class TauCorrector:
         tau_genMatch_mask = self.taus_genMatch == 5
         # Only taus passing the wp stablished
         tau_wp_mask = ak.flatten(
-            working_points.taus_vs_jet(self.events, self.tau_vs_jet)
+            self.working_points.taus_vs_jet(self.events, self.tau_vs_jet)
         )
         in_tau_mask = tau_dm_mask & tau_genMatch_mask & tau_wp_mask
         # get 'in-limits' taus
@@ -340,7 +340,7 @@ class TauCorrector:
             | (self.taus_dm == 10)
         )
         # Only taus passing the wp stablished
-        tau_wp_mask = ak.flatten(working_points.taus_vs_jet(events, self.tau_vs_jet))
+        tau_wp_mask = ak.flatten(self.working_points.taus_vs_jet(events, self.tau_vs_jet))
         tau_mask = tau_pt_mask & tau_dm_mask & tau_wp_mask
         # get 'in-limits' taus
         in_limit_taus = self.taus.mask[tau_mask]

@@ -6,8 +6,9 @@ import importlib.resources
 from coffea import util
 from typing import Type
 from coffea.analysis_tools import Weights
-from analysis.helpers import working_points
 from analysis.corrections.utils import get_pog_json
+from analysis.helpers.working_points import WorkingPoints
+
 
 
 class BTagCorrector:
@@ -84,11 +85,13 @@ class BTagCorrector:
             get_pog_json(json_name="btag", year=year)
         )
 
+        
         # bc and light jets
         # hadron flavor definition: 5=b, 4=c, 0=udsg
         self._bc_jets = events.Jet[events.Jet.hadronFlavour > 0]
         self._light_jets = events.Jet[events.Jet.hadronFlavour == 0]
         self._jet_map = {"bc": self._bc_jets, "light": self._light_jets}
+        working_points = WorkingPoints()
         self._jet_pass_btag = {
             "bc": working_points.jets_deepjet(events, self._wp, year)[
                 events.Jet.hadronFlavour > 0
