@@ -45,7 +45,7 @@ def get_jobpath(args: dict) -> str:
 def get_jobname(args: dict) -> str:
     jobname = args["processor"]
     jobname += f'_{args["dataset"]}'
-    if args["nsample"]:
+    if "nsample" in args:
         jobname += f'_{args["nsample"]}'
     return jobname
 
