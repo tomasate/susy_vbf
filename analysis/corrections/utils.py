@@ -29,8 +29,8 @@ POG_JSONS = {
 }
 
 pog_years = {
-    "2016": "2016postVFP_UL",
-    "2016APV": "2016preVFP_UL",
+    "2016postVFP": "2016postVFP_UL",
+    "2016preVFP": "2016preVFP_UL",
     "2017": "2017_UL",
     "2018": "2018_UL",
 }
@@ -43,9 +43,9 @@ def get_pog_json(json_name: str, year: str) -> str:
     Parameters:
     -----------
         json_name:
-            json name {'muon', 'electron', 'pileup', 'btag'}
+            json name {muon, muon_highpt, electron, tau, pileup, btag, met, pujetid, jetvetomaps}
         year:
-            dataset year {'2016', '2017', '2018'}
+            dataset year {'2016preVFP', '2016postVFP' '2017', '2018'}
     """
     if json_name in POG_JSONS:
         pog_json = POG_JSONS[json_name]
