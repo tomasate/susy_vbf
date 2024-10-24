@@ -137,7 +137,8 @@ class ZToJets(processor.ProcessorABC):
                     ]["cuts"]["electrons_id"],
                 )
                 # add electron reco weights
-                electron_corrector.add_reco_weight()
+                electron_corrector.add_reco_weight("RecoAbove20")
+                electron_corrector.add_reco_weight("RecoBelow20")
 
                 # muon corrector
                 muon_corrector = MuonCorrector(
