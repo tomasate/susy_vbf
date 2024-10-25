@@ -23,7 +23,7 @@ jec_name_map = {
     "UnClusteredEnergyDeltaY": "MetUnclustEnUpDeltaY",
 }
 
-data_path = Path(Path.home(), "wprime_plus_b/wprime_plus_b/data")
+data_path = Path(Path.home(), "susy_vbf/analysis/data")
 
 
 def jet_factory_factory(files):
