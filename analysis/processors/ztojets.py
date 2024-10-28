@@ -238,19 +238,8 @@ class ZToJets(processor.ProcessorABC):
                             variation=variation,
                             flow=self.flow,
                         )
-                elif is_mc and syst_var != "nominal":
-                    # object-wise variations
-                    region_weight = weights_container.weight()[region_selection]
-                    fill_histogram(
-                        histograms=hist_dict,
-                        histogram_config=self.histogram_config,
-                        feature_map=feature_map,
-                        weights=region_weight,
-                        variation=syst_var,
-                        flow=self.flow,
-                    )
-                elif not is_mc and syst_var == "nominal":
-                    # object-wise variations
+                else:
+                    # fill Data/object-wise variations for MC samples
                     region_weight = weights_container.weight()[region_selection]
                     fill_histogram(
                         histograms=hist_dict,
