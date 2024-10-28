@@ -1,10 +1,5 @@
-import json
-import yaml
 import copy
-import pickle
-import numpy as np
 import awkward as ak
-import importlib.resources
 from coffea import processor
 from coffea.analysis_tools import PackedSelection, Weights
 from analysis.configs import ProcessorConfigBuilder
@@ -18,10 +13,8 @@ from analysis.corrections.l1prefiring import add_l1prefiring_weight
 from analysis.corrections.pujetid import add_pujetid_weight
 from analysis.corrections.btag import BTagCorrector
 from analysis.corrections.muon import MuonCorrector
-from analysis.corrections.muon_highpt import MuonHighPtCorrector
 from analysis.corrections.tau import TauCorrector
 from analysis.corrections.electron import ElectronCorrector
-from analysis.corrections.jetvetomaps import jetvetomaps_mask
 from analysis.selections import (
     ObjectSelector,
     get_lumi_mask,
