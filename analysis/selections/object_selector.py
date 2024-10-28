@@ -25,10 +25,7 @@ class ObjectSelector:
                     self.objects[obj_name] = self.objects[obj_name][selection_mask]
             else:
                 selection_function = getattr(self, obj_config["field"])
-                signature = inspect.signature(selection_function)
-                parameters = signature.parameters.keys()
-                args = {}
-                if "cuts" in parameters:
+                if "cuts" in obj_config:
                     selection_function(obj_config["cuts"])
                 else:
                     selection_function()
