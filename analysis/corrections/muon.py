@@ -1,23 +1,15 @@
 import json
-import copy
 import correctionlib
 import numpy as np
 import awkward as ak
-import importlib.resources
 from typing import Type
 from pathlib import Path
 from .utils import unflat_sf
 from coffea.analysis_tools import Weights
+from analysis.selections import trigger_match
 from analysis.corrections.utils import pog_years, get_pog_json
-from analysis.helpers.trigger import trigger_match
-from analysis.selections import (
-    object_selector,
-    get_lumi_mask,
-    get_trigger_mask,
-    get_trigger_match_mask,
-    get_metfilters_mask,
-    get_stitching_mask,
-)
+
+
 
 # https://twiki.cern.ch/twiki/bin/view/CMS/MuonUL2016
 # https://twiki.cern.ch/twiki/bin/view/CMS/MuonUL2017
