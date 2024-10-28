@@ -42,6 +42,7 @@ object_selection:
       min_pt: events.Jet.pt > 30
       eta: np.abs(events.Jet.eta) < 2.4
       jets_deepjet: medium
+      jetsvetomaps: true
       jets_electrons_dr: 0.4
       jets_muons_dr: 0.4
       jets_taus_dr: 0.4
@@ -52,6 +53,7 @@ object_selection:
       eta: 2.4
       jets_id: loose
       jets_pileup: tight
+      jetsvetomaps: true
       jets_electrons_dr: 0.4
       jets_muons_dr: 0.4
       jets_taus_dr: 0.4

@@ -3,6 +3,7 @@ import inspect
 import numpy as np
 import awkward as ak
 from analysis.working_points import working_points
+from analysis.corrections.jetvetomaps import jetvetomaps_mask
 
 
 class ObjectSelector:
@@ -38,8 +39,12 @@ class ObjectSelector:
         selection_mask = ak.ones_like(self.objects[obj_name].pt, dtype=bool)
         # iterate over all cuts
         for selection, str_mask in cuts.items():
+            # check if jet veto maps
+            if selection == "jetsvetomaps":
+                if str_mask:
+                    mask = jetvetomaps_mask(events.Jet, year=self.year)
             # check if selections is cross-cleaning
-            if "dr" in selection:
+            elif "dr" in selection:
                 mask = self.delta_r_mask(selection=selection, threshold=str_mask)
             # check if 'str_mask' contains 'events' or 'objects' and evaluate string expression
             elif "events" in str_mask or "objects" in str_mask:
@@ -65,20 +70,32 @@ class ObjectSelector:
         low_pt_jets_mask = (
             (self.events.Jet.pt > cuts["min_pt"])
             & (self.events.Jet.pt < 50)
-            & (np.abs(self.events.Jet.eta) < cuts["eta"])
-            & working_points.jets_id(self.events, cuts["jets_id"])
             & working_points.jets_pileup(self.events, cuts["jets_pileup"], self.year)
         )
         high_pt_jets_mask = (
             (self.events.Jet.pt > 50)
-            & (np.abs(self.events.Jet.eta) < cuts["eta"])
-            & working_points.jets_id(self.events, cuts["jets_id"])
         )
         selection_mask = ak.where(
             (self.events.Jet.pt > cuts["min_pt"]) & (self.events.Jet.pt < 50),
             low_pt_jets_mask,
             high_pt_jets_mask,
         )
+        selection_mask = (
+            selection_mask
+            & (np.abs(self.events.Jet.eta) < cuts["eta"])
+            & working_points.jets_id(self.events, cuts["jets_id"])
+        )
+        # apply jet veto maps
+        if cuts["jetsvetomaps"]:
+            selection_mask = selection_mask & jetvetomaps_mask(self.events.Jet, self.year)
+        # cross-cleaning wiht leptons
+        dr_values = ["jets_electrons_dr", "jets_muons_dr", "jets_taus_dr"]
+        for dr in dr_values:
+            if dr in cuts:
+                selection_mask = (
+                    selection_mask
+                    & (self.delta_r_mask(dr, cuts[dr]))
+                )
         # apply object selection cuts
         self.objects["jets"] = self.events.Jet[selection_mask]
 
