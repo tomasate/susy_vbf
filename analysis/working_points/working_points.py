@@ -97,7 +97,7 @@ class WorkingPoints:
         }
         return wps[wp]
     
-    def tau_decaymode(self, events, wp):
+    def taus_decaymode(self, events, wp):
         prong_to_modes = {
             "1": [0, 1, 2],
             "2": [5, 6, 7],
