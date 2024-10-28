@@ -52,7 +52,7 @@ processor_config = ProcessorConfig(
                 "pt": "events.Jet.pt > 30",
                 "eta": "np.abs(events.Jet) < 4.7",
                 "jets_pileup": "tight",
-                "jets_id": "events.Jet.jetId == 6",
+                "jets_id": "tightlepveto",
             }
         },
         "bjets": {
@@ -61,7 +61,7 @@ processor_config = ProcessorConfig(
                 "pt": "events.Jet.pt > 30",
                 "eta": "np.abs(events.Jet) < 2.4",
                 "jets_pileup": "tight",
-                "id": "events.Jet.jetId == 6",
+                "jets_id": "tightlepveto",
                 "jets_deepjet": "medium",
             }
         },

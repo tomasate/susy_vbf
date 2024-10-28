@@ -142,8 +142,17 @@ class WorkingPoints:
         }
         return puid_wps[year][wp]
         
-    def jets_deepjet(self, events, wp, year):
+    
+    def jets_id(self, events, wp):
+        id_wps = {
+            "loose": events.Jet.jetId == 0,
+            "tight": events.Jet.jetId == 2,
+            "tightlepveto": events.Jet.jetId == 6,
+        }
+        return id_wps[wp]
         
+        
+    def jets_deepjet(self, events, wp, year):
         wps = {
             "2016preVFP": {
                 "loose": events.Jet.btagDeepFlavB > 0.0508,
