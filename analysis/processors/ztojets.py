@@ -246,7 +246,7 @@ class ZToJets(processor.ProcessorABC):
                         histogram_config=self.histogram_config,
                         feature_map=feature_map,
                         weights=region_weight,
-                        variation=variation,
+                        variation=syst_var,
                         flow=self.flow,
                     )
                 elif not is_mc and syst_var == "nominal":
@@ -257,7 +257,7 @@ class ZToJets(processor.ProcessorABC):
                         histogram_config=self.histogram_config,
                         feature_map=feature_map,
                         weights=region_weight,
-                        variation=variation,
+                        variation=syst_var,
                         flow=self.flow,
                     )
         # define output dictionary accumulator
