@@ -6,3 +6,4 @@ get_trigger_mask = event_selections.get_trigger_mask
 get_trigger_match_mask = event_selections.get_trigger_match_mask
 get_metfilters_mask = event_selections.get_metfilters_mask
 get_stitching_mask = event_selections.get_stitching_mask
+get_hemcleaning_mask = event_selections.get_hemcleaning_mask

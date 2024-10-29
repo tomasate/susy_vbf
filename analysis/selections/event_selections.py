@@ -53,3 +53,36 @@ def get_stitching_mask(events, dataset, dataset_key, ht_value):
     if dataset.startswith(dataset_key):
         stitching_mask = events.LHE.HT < ht_value
     return stitching_mask
+
+def get_hemcleaning_mask(events):
+    # hem-cleaning selection
+    # https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/2000.html
+    # Due to the HEM issue in year 2018, we veto the events with jets and electrons in the
+    # region -3 < eta <-1.3 and -1.57 < phi < -0.87 to remove fake MET
+    hem_veto = ak.any(
+        (
+            (events.Jet.eta > -3.2)
+            & (events.Jet.eta < -1.3)
+            & (events.Jet.phi > -1.57)
+            & (events.Jet.phi < -0.87)
+        ),
+        -1,
+    ) | ak.any(
+        (
+            (events.Electron.pt > 30)
+            & (events.Electron.eta > -3.2)
+            & (events.Electron.eta < -1.3)
+            & (events.Electron.phi > -1.57)
+            & (events.Electron.phi < -0.87)
+        ),
+        -1,
+    )
+    hem_cleaning = (
+        (
+            (events.run >= 319077) & (not hasattr(events, "genWeight"))
+        )  # if data check if in Runs C or D
+        # else for MC randomly cut based on lumi fraction of C&D
+        | ((np.random.rand(len(events)) < 0.632) & hasattr(events, "genWeight"))
+    ) & (hem_veto)
+
+    return ~hem_cleaning
