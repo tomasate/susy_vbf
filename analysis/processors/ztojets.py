@@ -5,7 +5,6 @@ from coffea.analysis_tools import PackedSelection, Weights
 from analysis.configs import ProcessorConfigBuilder
 from analysis.histograms import HistBuilder, fill_histogram
 from analysis.corrections.jec import apply_jet_corrections
-from analysis.corrections.met import apply_met_phi_corrections
 from analysis.corrections.rochester import apply_rochester_corrections
 from analysis.corrections.tau_energy import apply_tau_energy_scale_corrections
 from analysis.corrections.pileup import add_pileup_weight
@@ -15,6 +14,7 @@ from analysis.corrections.btag import BTagCorrector
 from analysis.corrections.muon import MuonCorrector
 from analysis.corrections.tau import TauCorrector
 from analysis.corrections.electron import ElectronCorrector
+from analysis.corrections.met import apply_met_phi_corrections, update_met_jet_veto
 from analysis.selections import (
     ObjectSelector,
     get_lumi_mask,
@@ -23,7 +23,6 @@ from analysis.selections import (
     get_metfilters_mask,
     get_stitching_mask,
 )
-
 
 
 class ZToJets(processor.ProcessorABC):
@@ -40,7 +39,6 @@ class ZToJets(processor.ProcessorABC):
         self.histogram_config = self.processor_config.histogram_config
         self.histograms = HistBuilder(self.histogram_config).build_histogram()
 
-        
     def process(self, events):
         year = self.year
         # get number of events
@@ -83,6 +81,10 @@ class ZToJets(processor.ProcessorABC):
                 is_mc=is_mc,
                 year=year,
             )
+            # propagate jet_veto maps to MET
+            if object_selections["jets"]["cuts"]["jetsvetomaps"]:
+                update_met_jet_veto(events, year)
+
             # -------------------------------------------------------------
             # event SF/weights computation
             # -------------------------------------------------------------
@@ -125,7 +127,9 @@ class ZToJets(processor.ProcessorABC):
                 )
                 # add electron ID weights
                 electron_corrector.add_id_weight(
-                    id_working_point=object_selections["electrons"]["cuts"]["electrons_id"],
+                    id_working_point=object_selections["electrons"]["cuts"][
+                        "electrons_id"
+                    ],
                 )
                 # add electron reco weights
                 electron_corrector.add_reco_weight("RecoAbove20")
@@ -223,9 +227,7 @@ class ZToJets(processor.ProcessorABC):
                     variations = ["nominal"] + list(weights_container.variations)
                     for variation in variations:
                         if variation == "nominal":
-                            region_weight = weights_container.weight()[
-                                region_selection
-                            ]
+                            region_weight = weights_container.weight()[region_selection]
                         else:
                             region_weight = weights_container.weight(
                                 modifier=variation
