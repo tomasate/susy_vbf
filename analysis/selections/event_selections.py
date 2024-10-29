@@ -69,7 +69,7 @@ def get_hemcleaning_mask(events):
         -1,
     ) | ak.any(
         (
-            (events.Electron.pt > e0)
+            (events.Electron.pt > 30)
             & (events.Electron.eta > -3.2)
             & (events.Electron.eta < -1.3)
             & (events.Electron.phi > -1.57)
