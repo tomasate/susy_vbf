@@ -41,6 +41,7 @@ object_selection:
     cuts:
       min_pt: events.Jet.pt > 30
       eta: np.abs(events.Jet.eta) < 2.4
+      jets_id: tightlepveto
       jets_deepjet: medium
       jetsvetomaps: true
       jets_electrons_dr: 0.4
