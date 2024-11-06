@@ -23,7 +23,7 @@ object_selection:
       min_pt: events.Electron.pt > 30
       eta: np.abs(events.Electron.eta) < 2.1
       electrons_id: wp80iso
-      electrons_muons_dr: 0.4
+      electrons_muons_dr: delta_r_mask(events.Electron, objects['muons'])
   taus:
     field: events.Tau
     cuts:
@@ -33,9 +33,9 @@ object_selection:
       taus_vs_jet: loose
       taus_vs_ele: vvloose
       taus_vs_mu: loose
-      taus_decaymode: "13"
-      taus_electrons_dr: 0.4
-      taus_muons_dr: 0.4
+      taus_decaymode: '13'
+      taus_electrons_dr: delta_r_mask(events.Tau, objects['electrons'])
+      taus_muons_dr: delta_r_mask(events.Tau, objects['muons'])
   bjets:
     field: events.Jet
     cuts:
@@ -43,34 +43,35 @@ object_selection:
       eta: np.abs(events.Jet.eta) < 2.4
       jets_id: tightlepveto
       jets_deepjet: medium
-      jetsvetomaps: true
-      jets_electrons_dr: 0.4
-      jets_muons_dr: 0.4
-      jets_taus_dr: 0.4
+      jetsvetomaps: jetvetomaps_mask(events.Jet, '2017')
+      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'])
+      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'])
+      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'])
   jets:
-    field: select_jets
+    field: events.Jet
     cuts:
-      min_pt: 30
-      eta: 2.4
+      min_pt: events.Jet.pt > 30
+      eta: np.abs(events.Jet.eta) < 2.4
       jets_id: tightlepveto
       jets_pileup: tight
-      jetsvetomaps: true
-      jets_electrons_dr: 0.4
-      jets_muons_dr: 0.4
-      jets_taus_dr: 0.4
+      jetsvetomaps: jetvetomaps_mask(events.Jet, '2017')
+      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'])
+      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'])
+      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'])
   met:
     field: select_met
     cuts: null
   dimuons:
     field: select_dimuons
     cuts:
-      min_mass: 60
-      max_mass: 120
+      mass_range: (objects['dimuons'].p4.mass > 60) & (objects['dimuons'].p4.mass < 120)
+      opp_charge: objects['dimuons'].mu1.charge * objects['dimuons'].mu2.charge < 0
   dijets:
     field: select_dijets
     cuts:
-      delta_eta: 3.8
-      max_mass: 500
+      delta_eta: np.abs(objects['dijets'].j1.eta - objects['dijets'].j2.eta) > 3.8
+      opp_charge: objects['dijets'].j1.eta * objects['dijets'].j2.eta < 0
+      max_mass: objects['dijets'].p4.mass > 500
 event_selection:
   goodvertex: events.PV.npvsGood > 0
   lumi: get_lumi_mask(events, goldenjson)
