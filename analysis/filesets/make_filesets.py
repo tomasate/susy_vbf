@@ -94,7 +94,7 @@ SITES = {
 
 def main(args):
     # open dataset configs
-    with open(f"{Path.cwd()}/{args.year}_fileset.json", "r") as f:
+    with open(f"{Path.cwd()}/{args.year}_fileset.yaml", "r") as f:
         dataset_configs = yaml.safe_load(f)
     # read dataset queries
     das_queries = {}
