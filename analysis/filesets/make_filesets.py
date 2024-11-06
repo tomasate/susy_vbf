@@ -1,4 +1,5 @@
 import os
+import yaml
 import json
 import argparse
 from pathlib import Path
@@ -93,8 +94,8 @@ SITES = {
 
 def main(args):
     # open dataset configs
-    with open(f"{Path.cwd()}/{args.year}_datasets.json", "r") as f:
-        dataset_configs = json.load(f)
+    with open(f"{Path.cwd()}/{args.year}_fileset.json", "r") as f:
+        dataset_configs = yaml.safe_load(f)
     # read dataset queries
     das_queries = {}
     for sample in dataset_configs:
