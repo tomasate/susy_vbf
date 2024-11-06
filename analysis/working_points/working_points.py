@@ -1,8 +1,9 @@
 import numpy as np
 import awkward as ak
 
+
 class WorkingPoints:
-    
+
     def muons_id(self, events, wp):
         wps = {
             "highpt": events.Muon.highPtId == 2,
@@ -12,7 +13,7 @@ class WorkingPoints:
             "tight": events.Muon.tightId,
         }
         return wps[wp]
-    
+
     def muons_iso(self, events, wp):
         wps = {
             "loose": (
@@ -32,7 +33,7 @@ class WorkingPoints:
             ),
         }
         return wps[wp]
-    
+
     def electrons_id(self, events, wp):
         wps = {
             # mva ID working points https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2
@@ -46,22 +47,28 @@ class WorkingPoints:
             "tight": events.Electron.cutBased == 4,
         }
         return wps[wp]
-    
+
     def electrons_iso(self, events, wp):
         wps = {
             # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonSelection
-            "loose": events.Electron.pfRelIso04_all < 0.25
-            if hasattr(events.Electron, "pfRelIso04_all")
-            else events.Electron.pfRelIso03_all < 0.25,
-            "medium": events.Electron.pfRelIso04_all < 0.20
-            if hasattr(events.Electron, "pfRelIso04_all")
-            else events.Electron.pfRelIso03_all < 0.20,
-            "tight": events.Electron.pfRelIso04_all < 0.15
-            if hasattr(events.Electron, "pfRelIso04_all")
-            else events.Electron.pfRelIso03_all < 0.15,
+            "loose": (
+                events.Electron.pfRelIso04_all < 0.25
+                if hasattr(events.Electron, "pfRelIso04_all")
+                else events.Electron.pfRelIso03_all < 0.25
+            ),
+            "medium": (
+                events.Electron.pfRelIso04_all < 0.20
+                if hasattr(events.Electron, "pfRelIso04_all")
+                else events.Electron.pfRelIso03_all < 0.20
+            ),
+            "tight": (
+                events.Electron.pfRelIso04_all < 0.15
+                if hasattr(events.Electron, "pfRelIso04_all")
+                else events.Electron.pfRelIso03_all < 0.15
+            ),
         }
         return wps[wp]
-    
+
     def taus_vs_jet(self, events, wp):
         wps = {
             "vvvloose": events.Tau.idDeepTau2017v2p1VSjet > 1,
@@ -71,10 +78,10 @@ class WorkingPoints:
             "medium": events.Tau.idDeepTau2017v2p1VSjet > 16,
             "tight": events.Tau.idDeepTau2017v2p1VSjet > 32,
             "vtight": events.Tau.idDeepTau2017v2p1VSjet > 64,
-            "vvtight": events.Tau.idDeepTau2017v2p1VSjet > 128
+            "vvtight": events.Tau.idDeepTau2017v2p1VSjet > 128,
         }
         return wps[wp]
-    
+
     def taus_vs_ele(self, events, wp):
         wps = {
             "vvvloose": events.Tau.idDeepTau2017v2p1VSe > 1,
@@ -84,19 +91,19 @@ class WorkingPoints:
             "medium": events.Tau.idDeepTau2017v2p1VSe > 16,
             "tight": events.Tau.idDeepTau2017v2p1VSe > 32,
             "vtight": events.Tau.idDeepTau2017v2p1VSe > 64,
-            "vvtight": events.Tau.idDeepTau2017v2p1VSe > 128
+            "vvtight": events.Tau.idDeepTau2017v2p1VSe > 128,
         }
         return wps[wp]
-    
+
     def taus_vs_mu(self, events, wp):
         wps = {
             "vloose": events.Tau.idDeepTau2017v2p1VSmu > 1,
             "loose": events.Tau.idDeepTau2017v2p1VSmu > 2,
             "medium": events.Tau.idDeepTau2017v2p1VSmu > 4,
-            "tight": events.Tau.idDeepTau2017v2p1VSmu > 8
+            "tight": events.Tau.idDeepTau2017v2p1VSmu > 8,
         }
         return wps[wp]
-    
+
     def taus_decaymode(self, events, wp):
         prong_to_modes = {
             "1": [0, 1, 2],
@@ -115,9 +122,8 @@ class WorkingPoints:
         for mode in prong_to_modes[wp]:
             decay_mode_mask = np.logical_or(decay_mode_mask, tau_dm == mode)
         return decay_mode_mask
-        
-    
-    def jets_pileup(self, events, wp, year):
+
+    def jets_pileup(self, events, wp, year, min_pt):
         puid_wps = {
             "2016preVFP": {
                 "loose": events.Jet.puId == 1,
@@ -138,11 +144,18 @@ class WorkingPoints:
                 "loose": events.Jet.puId == 4,
                 "medium": events.Jet.puId == 6,
                 "tight": events.Jet.puId == 7,
-            }
+            },
         }
-        return puid_wps[year][wp]
-        
-    
+        # break up selection for low and high pT jets
+        # to apply jets_pileup only to jets with pT < 50 GeV
+        low_pt_jets_mask = eval(min_pt) & (events.Jet.pt < 50) & puid_wps[year][wp]
+        high_pt_jets_mask = events.Jet.pt > 50
+        return ak.where(
+            eval(min_pt) & (events.Jet.pt < 50),
+            low_pt_jets_mask,
+            high_pt_jets_mask,
+        )
+
     def jets_id(self, events, wp):
         id_wps = {
             "loose": events.Jet.jetId == 0,
@@ -150,30 +163,28 @@ class WorkingPoints:
             "tightlepveto": events.Jet.jetId == 6,
         }
         return id_wps[wp]
-        
-        
+
     def jets_deepjet(self, events, wp, year):
         wps = {
             "2016preVFP": {
                 "loose": events.Jet.btagDeepFlavB > 0.0508,
                 "medium": events.Jet.btagDeepFlavB > 0.2598,
-                "tight": events.Jet.btagDeepFlavB > 0.6502
+                "tight": events.Jet.btagDeepFlavB > 0.6502,
             },
             "2016postVFP": {
                 "loose": events.Jet.btagDeepFlavB > 0.048,
                 "medium": events.Jet.btagDeepFlavB > 0.2489,
-                "tight": events.Jet.btagDeepFlavB > 0.6377
+                "tight": events.Jet.btagDeepFlavB > 0.6377,
             },
             "2017": {
                 "loose": events.Jet.btagDeepFlavB > 0.0532,
                 "medium": events.Jet.btagDeepFlavB > 0.304,
-                "tight": events.Jet.btagDeepFlavB > 0.7476
+                "tight": events.Jet.btagDeepFlavB > 0.7476,
             },
             "2018": {
                 "loose": events.Jet.btagDeepFlavB > 0.049,
                 "medium": events.Jet.btagDeepFlavB > 0.2783,
-                "tight": events.Jet.btagDeepFlavB > 0.71
-            }
+                "tight": events.Jet.btagDeepFlavB > 0.71,
+            },
         }
         return wps[year][wp]
-        
