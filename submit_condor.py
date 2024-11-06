@@ -80,10 +80,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--eos",
-        dest="eos",
-        type=str,
-        default="True",
-        help="if True save outputs to /eos (default True)",
+        action="store_true",
+        help="Enable reading outputs from /eos",
     )
     args = parser.parse_args()
     main(args)
