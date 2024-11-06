@@ -45,7 +45,7 @@ options:
   --flow FLOW           whether to include underflow/overflow to first/last bin {True, False} (default True)
   --submit SUBMIT       if True submit job to Condor. If False, it just builds datasets and condor files (default True)
   --label LABEL         Tag to label the run (default ztojets_CR)
-  --eos                 Enable reading outputs from /eos
+  --eos                 Enable saving outputs to /eos
 ```
 Example:
 ```
@@ -56,11 +56,25 @@ Outputs will be save to `/eos/user/<username first letter>/<username>/susy_vbf/o
 
 #### Postprocessing
 
-Once you have run the corresponding datasets for the processor, you can get the results by typing:
+Once you have run the corresponding datasets for the processor, you can get the results using the `run_run_postprocess.py` script:
+```bash
+usage: run_postprocess.py [-h] [--processor PROCESSOR] [--year YEAR] [--label LABEL] [--eos] [--output_dir OUTPUT_DIR] [--log_scale]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --processor PROCESSOR
+                        processor to be used {ztojets}
+  --year YEAR           year of the data {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)
+  --label LABEL         Label of the output directory
+  --eos                 Enable reading outputs from /eos
+  --output_dir OUTPUT_DIR
+                        Path to the outputs directory
+  --log_scale           Enable log scale for y-axis
+```
+Example:
 ```bash
 singularity shell -B /cvmfs -B /pnfs -B /user /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
-``` 
-```bash
+
 python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos
 ``` 
 You can also add the `--log_scale` flag to change the y-axis to log scale. Results will be saved to the same directory as the output files
