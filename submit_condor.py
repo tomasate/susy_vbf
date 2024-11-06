@@ -1,4 +1,5 @@
 import json
+import yaml
 import argparse
 from pathlib import Path
 from condor import submit_condor
@@ -15,7 +16,7 @@ def main(args):
     del args["submit"]
 
     # split dataset into batches
-    fileset_path = Path(f"{Path.cwd()}/analysis/fileset")
+    fileset_path = Path(f"{Path.cwd()}/analysis/filesets")
     with open(f"{fileset_path}/fileset_{args['year']}_NANO_lxplus.json", "r") as f:
         root_files = json.load(f)[args["dataset"]]
     root_files_list = divide_list(root_files)
