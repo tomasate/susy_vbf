@@ -2,7 +2,7 @@ import json
 import argparse
 from pathlib import Path
 from condor import submit_condor
-from analysis.fileset import divide_list
+from analysis.filesets import divide_list
 from analysis.helpers import get_output_directory
 
 
