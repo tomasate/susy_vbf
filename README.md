@@ -56,7 +56,7 @@ Outputs will be save to `/eos/user/<username first letter>/<username>/susy_vbf/o
 
 #### Postprocessing
 
-Once you have run the corresponding datasets for the processor, you can get the results using the `run_run_postprocess.py` script:
+Once you have run the corresponding datasets for the processor, you can get the results using the `run_postprocess.py` script:
 ```bash
 usage: run_postprocess.py [-h] [--processor PROCESSOR] [--year YEAR] [--label LABEL] [--eos] [--output_dir OUTPUT_DIR] [--log_scale]
 
