@@ -89,8 +89,12 @@ class Plotter:
         ]
         with open(f"{Path.cwd()}/analysis/filesets/{self.year}_fileset.yaml", "r") as f:
             dataset_configs = yaml.safe_load(f)
-        processes = set(
-            dataset_configs[sample]["process"] for sample in dataset_configs
+        processes = sorted(
+            set(
+                dataset_configs[sample]["process"]
+                for sample in dataset_configs
+                if dataset_configs[sample]["process"] != "Data"
+            )
         )
         color_map = {
             process: color
@@ -132,9 +136,14 @@ class Plotter:
                                 }
                             ]
                             if divide_by_bin_width:
-                                bin_width = hist_to_append.axes.edges[0][1:] - hist_to_append.axes.edges[0][:-1]
+                                bin_width = (
+                                    hist_to_append.axes.edges[0][1:]
+                                    - hist_to_append.axes.edges[0][:-1]
+                                )
                                 hist_to_append /= bin_width
-                            feature_hists["mc"]["nominal"]["histograms"].append(hist_to_append)
+                            feature_hists["mc"]["nominal"]["histograms"].append(
+                                hist_to_append
+                            )
                             feature_hists["mc"]["nominal"]["labels"].append(process)
                             feature_hists["mc"]["nominal"]["colors"].append(
                                 color_map[process]
@@ -147,7 +156,10 @@ class Plotter:
                                 }
                             ]
                             if divide_by_bin_width:
-                                bin_width = variation_hist.axes.edges[0][1:] - variation_hist.axes.edges[0][:-1]
+                                bin_width = (
+                                    variation_hist.axes.edges[0][1:]
+                                    - variation_hist.axes.edges[0][:-1]
+                                )
                                 variation_hist /= bin_width
                             if variation in feature_hists["mc"]["variations"]:
                                 feature_hists["mc"]["variations"][variation].append(
@@ -167,10 +179,15 @@ class Plotter:
                         if variation == "nominal":
                             hist_to_append = histogram[{"variation": "nominal"}]
                             if divide_by_bin_width:
-                                bin_width = hist_to_append.axes.edges[0][1:] - hist_to_append.axes.edges[0][:-1]
+                                bin_width = (
+                                    hist_to_append.axes.edges[0][1:]
+                                    - hist_to_append.axes.edges[0][:-1]
+                                )
                                 hist_to_append /= bin_width
                             # add nominal histograms, their labels and colors
-                            feature_hists["mc"]["nominal"]["histograms"].append(hist_to_append)
+                            feature_hists["mc"]["nominal"]["histograms"].append(
+                                hist_to_append
+                            )
                             feature_hists["mc"]["nominal"]["labels"].append(process)
                             feature_hists["mc"]["nominal"]["colors"].append(
                                 color_map[process]
@@ -178,7 +195,10 @@ class Plotter:
                         else:
                             variation_hist = histogram[{"variation": variation}]
                             if divide_by_bin_width:
-                                bin_width = variation_hist.axes.edges[0][1:] - variation_hist.axes.edges[0][:-1]
+                                bin_width = (
+                                    variation_hist.axes.edges[0][1:]
+                                    - variation_hist.axes.edges[0][:-1]
+                                )
                                 variation_hist /= bin_width
                             if variation in feature_hists["mc"]["variations"]:
                                 feature_hists["mc"]["variations"][variation].append(
@@ -191,14 +211,16 @@ class Plotter:
                 else:
                     data_hist = histogram[{"variation": "nominal"}]
                     if divide_by_bin_width:
-                        bin_width = data_hist.axes.edges[0][1:] - data_hist.axes.edges[0][:-1]
+                        bin_width = (
+                            data_hist.axes.edges[0][1:] - data_hist.axes.edges[0][:-1]
+                        )
                         data_hist /= bin_width
                     feature_hists["data"] = data_hist
-                    
+
         # accumulate variations histograms
         for variation, hist_list in feature_hists["mc"]["variations"].items():
             feature_hists["mc"]["variations"][variation] = accumulate(hist_list)
-            
+
         return feature_hists
 
     def plot_feature_hist(
