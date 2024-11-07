@@ -6,7 +6,7 @@ object_selection:
     field: events.Muon
     cuts:
       min_pt: events.Muon.pt > 30
-      eta: np.abs(events.Muon.eta) < 2.4
+      eta: np.abs(events.Muon.eta) < 2.1
       muons_id: tight
       muons_iso: tight
   veto_muons:
@@ -20,22 +20,22 @@ object_selection:
   electrons:
     field: events.Electron
     cuts:
-      min_pt: events.Electron.pt > 30
+      min_pt: events.Electron.pt > 5
       eta: np.abs(events.Electron.eta) < 2.1
-      electrons_id: wp80iso
-      electrons_muons_dr: delta_r_mask(events.Electron, objects['muons'])
+      electrons_id: wp90iso
+      electrons_muons_dr: delta_r_mask(events.Electron, objects['muons'], 0.4)
   taus:
     field: events.Tau
     cuts:
       min_pt: events.Tau.pt > 20
-      eta: np.abs(events.Tau.eta) < 2.1
+      eta: np.abs(events.Tau.eta) < 2.3
       dz: np.abs(events.Tau.dz) < 0.2
       taus_vs_jet: loose
       taus_vs_ele: vvloose
       taus_vs_mu: loose
       taus_decaymode: '13'
-      taus_electrons_dr: delta_r_mask(events.Tau, objects['electrons'])
-      taus_muons_dr: delta_r_mask(events.Tau, objects['muons'])
+      taus_electrons_dr: delta_r_mask(events.Tau, objects['electrons'], 0.3)
+      taus_muons_dr: delta_r_mask(events.Tau, objects['muons'], 0.3)
   bjets:
     field: events.Jet
     cuts:
@@ -44,20 +44,20 @@ object_selection:
       jets_id: tightlepveto
       jets_deepjet: medium
       jetsvetomaps: jetvetomaps_mask(events.Jet, '2017')
-      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'])
-      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'])
-      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'])
+      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'], 0.4)
+      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'], 0.4)
+      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'], 0.4)
   jets:
     field: events.Jet
     cuts:
       min_pt: events.Jet.pt > 30
-      eta: np.abs(events.Jet.eta) < 2.4
+      eta: np.abs(events.Jet.eta) < 4.7
       jets_id: tightlepveto
       jets_pileup: tight
       jetsvetomaps: jetvetomaps_mask(events.Jet, '2017')
-      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'])
-      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'])
-      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'])
+      jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'], 0.4)
+      jets_muons_dr: delta_r_mask(events.Jet, objects['muons'], 0.4)
+      jets_taus_dr: delta_r_mask(events.Jet, objects['taus'], 0.4)
   met:
     field: select_met
     cuts: null
