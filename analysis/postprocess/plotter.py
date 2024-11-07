@@ -375,7 +375,7 @@ class Plotter:
 
         # add CMS info
         hep.cms.lumitext(
-            f"{self.lumi * 1e-3:.1f} fb$^{{-1}}$ ({self.year}, 13.6 TeV)",
+            f"{self.lumi * 1e-3:.1f} fb$^{{-1}}$ ({self.year}, 13 TeV)",
             ax=ax,
         )
         hep.cms.text("Preliminary", ax=ax)
