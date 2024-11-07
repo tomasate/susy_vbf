@@ -35,6 +35,7 @@ def plot(args, processed_histograms, histograms_config, lumi, cat_axis=None):
                 feature=feature,
                 feature_label=histograms_config.axes[feature]["label"],
                 yratio_limits=(0, 2),
+                divide_by_bin_width=histograms_config.axes[feature]["type"] == "Variable",
                 log_scale=args.log_scale,
                 savefig=True,
             )
@@ -46,6 +47,7 @@ def plot(args, processed_histograms, histograms_config, lumi, cat_axis=None):
                     feature=feature,
                     feature_label=histograms_config.axes[feature]["label"],
                     yratio_limits=(0, 2),
+                    divide_by_bin_width=histograms_config.axes[feature]["type"] == "Variable",
                     log_scale=args.log_scale,
                     savefig=True,
                 )

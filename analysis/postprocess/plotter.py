@@ -72,7 +72,7 @@ class Plotter:
         self.cat_axis = cat_axis
         self.output_dir = output_dir
 
-    def get_feature_hists(self, feature: str) -> dict:
+    def get_feature_hists(self, feature: str, divide_by_bin_width: bool) -> dict:
         """get nominal and variations histograms"""
         # https://cms-analysis.docs.cern.ch/guidelines/plotting/colors/
         colors = [
@@ -125,14 +125,16 @@ class Plotter:
                     for variation in histogram.axes["variation"]:
                         if variation == "nominal":
                             # add nominal histograms, their labels and colors
-                            feature_hists["mc"]["nominal"]["histograms"].append(
-                                histogram[
-                                    {
-                                        "variation": "nominal",
-                                        self.cat_axis[0]: self.cat_axis[1],
-                                    }
-                                ]
-                            )
+                            hist_to_append = histogram[
+                                {
+                                    "variation": "nominal",
+                                    self.cat_axis[0]: self.cat_axis[1],
+                                }
+                            ]
+                            if divide_by_bin_width:
+                                bin_width = hist_to_append.axes.edges[0][1:] - hist_to_append.axes.edges[0][:-1]
+                                hist_to_append /= bin_width
+                            feature_hists["mc"]["nominal"]["histograms"].append(hist_to_append)
                             feature_hists["mc"]["nominal"]["labels"].append(process)
                             feature_hists["mc"]["nominal"]["colors"].append(
                                 color_map[process]
@@ -144,6 +146,9 @@ class Plotter:
                                     self.cat_axis[0]: self.cat_axis[1],
                                 }
                             ]
+                            if divide_by_bin_width:
+                                bin_width = variation_hist.axes.edges[0][1:] - variation_hist.axes.edges[0][:-1]
+                                variation_hist /= bin_width
                             if variation in feature_hists["mc"]["variations"]:
                                 feature_hists["mc"]["variations"][variation].append(
                                     variation_hist
@@ -160,16 +165,21 @@ class Plotter:
                 if process != "Data":
                     for variation in histogram.axes["variation"]:
                         if variation == "nominal":
+                            hist_to_append = histogram[{"variation": "nominal"}]
+                            if divide_by_bin_width:
+                                bin_width = hist_to_append.axes.edges[0][1:] - hist_to_append.axes.edges[0][:-1]
+                                hist_to_append /= bin_width
                             # add nominal histograms, their labels and colors
-                            feature_hists["mc"]["nominal"]["histograms"].append(
-                                histogram[{"variation": "nominal"}]
-                            )
+                            feature_hists["mc"]["nominal"]["histograms"].append(hist_to_append)
                             feature_hists["mc"]["nominal"]["labels"].append(process)
                             feature_hists["mc"]["nominal"]["colors"].append(
                                 color_map[process]
                             )
                         else:
                             variation_hist = histogram[{"variation": variation}]
+                            if divide_by_bin_width:
+                                bin_width = variation_hist.axes.edges[0][1:] - variation_hist.axes.edges[0][:-1]
+                                variation_hist /= bin_width
                             if variation in feature_hists["mc"]["variations"]:
                                 feature_hists["mc"]["variations"][variation].append(
                                     variation_hist
@@ -179,11 +189,16 @@ class Plotter:
                                     variation_hist
                                 ]
                 else:
-                    feature_hists["data"] = histogram[{"variation": "nominal"}]
-
+                    data_hist = histogram[{"variation": "nominal"}]
+                    if divide_by_bin_width:
+                        bin_width = data_hist.axes.edges[0][1:] - data_hist.axes.edges[0][:-1]
+                        data_hist /= bin_width
+                    feature_hists["data"] = data_hist
+                    
         # accumulate variations histograms
         for variation, hist_list in feature_hists["mc"]["variations"].items():
             feature_hists["mc"]["variations"][variation] = accumulate(hist_list)
+            
         return feature_hists
 
     def plot_feature_hist(
