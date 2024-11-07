@@ -99,7 +99,6 @@ class Plotter:
         color_map = {
             process: color
             for process, color in zip(processes, colors)
-            if process != "Data"
         }
         feature_hists = {
             "mc": {
