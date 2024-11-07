@@ -68,11 +68,11 @@ optional arguments:
   --label LABEL         Label of the output directory
   --eos                 Enable reading outputs from /eos
   --output_dir OUTPUT_DIR
-                        Path to the outputs directory
+                        Path to the outputs directory (optional)
   --log_scale           Enable log scale for y-axis
 ```
 Example:
-```bash
+```
 singularity shell -B /cvmfs -B /pnfs -B /user /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
 
 python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos

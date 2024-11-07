@@ -119,7 +119,7 @@ if __name__ == "__main__":
         "--output_dir",
         dest="output_dir",
         type=str,
-        help="Path to the outputs directory",
+        help="Path to the outputs directory (optional)",
     )
     parser.add_argument(
         "--log_scale",
