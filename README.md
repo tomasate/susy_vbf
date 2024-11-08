@@ -23,7 +23,7 @@ Use the [make_filesets.py](https://github.com/deoache/susy_vbf/blob/main/analysi
 singularity shell -B /afs -B /eos -B /cvmfs /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask:latest-py3.10
 
 # move to the fileset directory
-cd analysis/fileset/
+cd analysis/filesets/
 
 # run the 'make_filesets' script
 python make_filesets.py --year <year>
