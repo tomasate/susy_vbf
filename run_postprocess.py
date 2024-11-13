@@ -18,44 +18,43 @@ def clear_output_directory(output_dir):
         for file in files:
             os.remove(file)
 
-def plot(args, processed_histograms, histograms_config, lumi, cat_axis=None):
+
+def plot(args, processed_histograms, lumi):
+    # initialize plotter
     plotter = Plotter(
         processor=args.processor,
         processed_histograms=processed_histograms,
         year=args.year,
         lumi=lumi,
-        cat_axis=cat_axis,
         output_dir=args.output_dir,
     )
-    print_header("plotting histograms")
-    if histograms_config.layout == "individual":
-        for feature in histograms_config.axes:
-            logging.info(feature)
-            plotter.plot_feature_hist(
-                feature=feature,
-                feature_label=histograms_config.axes[feature]["label"],
+
+    # get histogram config
+    config_builder = ProcessorConfigBuilder(processor=args.processor, year=args.year)
+    processor_config = config_builder.build_processor_config()
+    histogram_config = processor_config.histogram_config
+    # get variables to plot
+    variables = list(histogram_config.axes.keys())
+    # get region categories
+    categories = processor_config.event_selection["categories"]
+    print_header("Plots")
+    for category in categories:
+        logging.info(f"plotting histograms for category: {category}")
+        for variable in variables:
+            logging.info(variable)
+            plotter.plot_histograms(
+                variable=variable,
+                category=category,
                 yratio_limits=(0, 2),
-                divide_by_bin_width=histograms_config.axes[feature]["type"] == "Variable",
                 log_scale=args.log_scale,
                 savefig=True,
             )
-    else:
-        for key, features in histograms_config.layout.items():
-            for feature in features:
-                logging.info(feature)
-                plotter.plot_feature_hist(
-                    feature=feature,
-                    feature_label=histograms_config.axes[feature]["label"],
-                    yratio_limits=(0, 2),
-                    divide_by_bin_width=histograms_config.axes[feature]["type"] == "Variable",
-                    log_scale=args.log_scale,
-                    savefig=True,
-                )
+
 
 def main(args):
     if not args.output_dir:
         args.output_dir = get_output_directory(vars(args))
-        
+
     # delete previous results
     clear_output_directory(args.output_dir)
 
@@ -77,15 +76,7 @@ def main(args):
     lumi = postprocessor.luminosities[args.year]
 
     # plot histograms
-    histograms_config = processor_config.histogram_config
-    if histograms_config.add_cat_axis:
-        for k in histograms_config.add_cat_axis:
-            categories = histograms_config.add_cat_axis[k]["categories"] + [sum]
-            for category in categories:
-                logging.info(f"plotting {category} category of {k} axis")
-                plot(args, processed_histograms, histograms_config, lumi, (k, category))
-    else:
-        plot(args, processed_histograms, histograms_config, lumi, None)
+    plot(args, processed_histograms, lumi)
 
 
 if __name__ == "__main__":
@@ -119,6 +110,7 @@ if __name__ == "__main__":
         "--output_dir",
         dest="output_dir",
         type=str,
+        default="outs/ztojets/csplusvbf/2017",
         help="Path to the outputs directory (optional)",
     )
     parser.add_argument(
