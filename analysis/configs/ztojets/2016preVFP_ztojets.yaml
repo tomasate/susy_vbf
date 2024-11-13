@@ -33,7 +33,7 @@ object_selection:
       taus_vs_jet: loose
       taus_vs_ele: vvloose
       taus_vs_mu: loose
-      taus_decaymode: '13'
+      taus_decaymode: "13"
       taus_electrons_dr: delta_r_mask(events.Tau, objects['electrons'], 0.3)
       taus_muons_dr: delta_r_mask(events.Tau, objects['muons'], 0.3)
   bjets:
@@ -73,22 +73,56 @@ object_selection:
       opp_charge: objects['dijets'].j1.eta * objects['dijets'].j2.eta < 0
       max_mass: objects['dijets'].p4.mass > 500
 event_selection:
-  goodvertex: events.PV.npvsGood > 0
-  lumi: get_lumi_mask(events, goldenjson)
-  trigger: get_trigger_mask(events, hlt_paths)
-  trigger_match: get_trigger_match_mask(events, hlt_paths)
-  metfilters: get_metfilters_mask(events, year)
-  dy_stitching: get_stitching_mask(events, dataset, 'DYJetsToLL_inclusive', 70)
-  w_stitching: get_stitching_mask(events, dataset, 'WJetsToLNu_inclusive', 100)
-  0lstate: objects['met'].pt > 250
-  two_muons: ak.num(objects['muons']) == 2
-  one_dimuon: ak.num(objects['dimuons']) == 1
-  muon_veto: ak.num(objects['veto_muons']) == 0
-  electron_veto: ak.num(objects['electrons']) == 0
-  tau_veto: ak.num(objects['taus']) == 0
-  bjet_veto: ak.num(objects['bjets']) == 0
-  atleast_two_jets: ak.num(objects['jets']) > 1
-  atleast_one_dijet: ak.num(objects['dijets']) > 0
+  selections:
+    goodvertex: events.PV.npvsGood > 0
+    lumi: get_lumi_mask(events, goldenjson)
+    trigger: get_trigger_mask(events, hlt_paths)
+    trigger_match: get_trigger_match_mask(events, hlt_paths)
+    metfilters: get_metfilters_mask(events, year)
+    dy_stitching: get_stitching_mask(events, dataset, 'DYJetsToLL_inclusive', 70)
+    w_stitching: get_stitching_mask(events, dataset, 'WJetsToLNu_inclusive', 100)
+    0lstate: objects['met'].pt > 250
+    two_muons: ak.num(objects['muons']) == 2
+    one_dimuon: ak.num(objects['dimuons']) == 1
+    muon_veto: ak.num(objects['veto_muons']) == 0
+    electron_veto: ak.num(objects['electrons']) == 0
+    tau_veto: ak.num(objects['taus']) == 0
+    bjet_veto: ak.num(objects['bjets']) == 0
+    atleast_two_jets: ak.num(objects['jets']) > 1
+    atleast_one_dijet: ak.num(objects['dijets']) > 0
+  categories:
+    central:
+      - goodvertex
+      - lumi
+      - trigger
+      - trigger_match
+      - metfilters
+      - dy_stitching
+      - w_stitching
+      - met
+      - two_muons
+      - one_dimuon
+      - muon_veto
+      - electron_veto
+      - tau_veto
+      - bjet_veto
+    vbf:
+      - goodvertex
+      - lumi
+      - trigger
+      - trigger_match
+      - metfilters
+      - dy_stitching
+      - w_stitching
+      - met
+      - two_muons
+      - one_dimuon
+      - muon_veto
+      - electron_veto
+      - tau_veto
+      - bjet_veto
+      - atleast_two_jets
+      - atleast_one_dijet
 histogram_config:
   add_syst_axis: true
   add_weight: true
