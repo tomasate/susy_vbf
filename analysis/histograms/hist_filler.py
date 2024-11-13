@@ -1,11 +1,13 @@
 import numpy as np
 import awkward as ak
 
+
 def normalize(array: ak.Array):
     if array.ndim == 2:
         return ak.fill_none(ak.flatten(array), np.nan)
     else:
         return ak.fill_none(array, np.nan)
+
 
 def get_flow_array(histogram, feature, feature_map):
     histogram_edges = histogram.axes[feature].edges
@@ -18,8 +20,9 @@ def get_flow_array(histogram, feature, feature_map):
         hist_min_bin_edge,
     )
 
+
 def fill_histogram(
-    histograms, histogram_config, feature_map, weights, variation, flow=True
+    histograms, histogram_config, feature_map, category, weights, variation, flow=True
 ):
     if histogram_config.layout == "individual":
         for feature in histograms:
@@ -32,9 +35,11 @@ def fill_histogram(
             else:
                 feature_array = normalize(feature_map[feature])
 
+            i
             fill_args = {
                 feature: feature_array,
                 "variation": variation,
+                "category": category,
                 "weight": (
                     ak.flatten(ak.ones_like(feature_map[feature]) * weights)
                     if feature_map[feature].ndim == 2
@@ -58,6 +63,7 @@ def fill_histogram(
             fill_args.update(
                 {
                     "variation": variation,
+                    "category": category,
                     "weight": (
                         ak.flatten(ak.ones_like(feature_map[feature]) * weights)
                         if feature_map[feature].ndim == 2
