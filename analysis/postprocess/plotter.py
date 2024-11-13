@@ -143,7 +143,7 @@ class Plotter:
                     break
 
         # get variable histogram for nominal variation and category
-        histogram = histogram[{"variation": variation, "region": category}].project(
+        histogram = histogram[{"variation": variation, "category": category}].project(
             variable
         )
 
@@ -189,10 +189,10 @@ class Plotter:
 
         # get variable histogram for nominal variation and category
         histogram_up = histogram[
-            {"variation": f"{variation}Up", "region": category}
+            {"variation": f"{variation}Up", "category": category}
         ].project(variable)
         histogram_down = histogram[
-            {"variation": f"{variation}Down", "region": category}
+            {"variation": f"{variation}Down", "category": category}
         ].project(variable)
 
         # check if axis is variable type
