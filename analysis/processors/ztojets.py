@@ -22,7 +22,7 @@ from analysis.selections import (
     get_trigger_match_mask,
     get_metfilters_mask,
     get_stitching_mask,
-    get_hemcleaning_mask
+    get_hemcleaning_mask,
 )
 
 
@@ -38,7 +38,7 @@ class ZToJets(processor.ProcessorABC):
         config_builder = ProcessorConfigBuilder(processor="ztojets", year=year)
         self.processor_config = config_builder.build_processor_config()
         self.histogram_config = self.processor_config.histogram_config
-        self.histograms = HistBuilder(self.histogram_config).build_histogram()
+        self.histograms = HistBuilder(self.processor_config).build_histogram()
 
     def process(self, events):
         year = self.year
@@ -51,8 +51,8 @@ class ZToJets(processor.ProcessorABC):
         # get golden json, HLT paths and selections
         goldenjson = self.processor_config.goldenjson
         hlt_paths = self.processor_config.hlt_paths
-        object_selections = self.processor_config.object_selection
-        event_selections = self.processor_config.event_selection
+        object_selection = self.processor_config.object_selection
+        event_selection = self.processor_config.event_selection
         # create copies of histogram objects
         hist_dict = copy.deepcopy(self.histograms)
         # initialize output dictionary
@@ -83,7 +83,7 @@ class ZToJets(processor.ProcessorABC):
                 year=year,
             )
             # propagate jet_veto maps to MET
-            if object_selections["jets"]["cuts"]["jetsvetomaps"]:
+            if "jetsvetomaps" in object_selection["jets"]["cuts"]:
                 update_met_jet_veto(events, year)
 
             # -------------------------------------------------------------
@@ -103,7 +103,7 @@ class ZToJets(processor.ProcessorABC):
                     jets=events.Jet,
                     weights=weights_container,
                     year=year,
-                    working_point=object_selections["jets"]["cuts"]["jets_pileup"],
+                    working_point=object_selection["jets"]["cuts"]["jets_pileup"],
                     variation=syst_var,
                 )
                 # b-tagging corrector
@@ -111,7 +111,7 @@ class ZToJets(processor.ProcessorABC):
                     events=events,
                     weights=weights_container,
                     sf_type="comb",
-                    worging_point=object_selections["bjets"]["cuts"]["jets_deepjet"],
+                    worging_point=object_selection["bjets"]["cuts"]["jets_deepjet"],
                     tagger="deepJet",
                     year=year,
                     full_run=False,
@@ -128,7 +128,7 @@ class ZToJets(processor.ProcessorABC):
                 )
                 # add electron ID weights
                 electron_corrector.add_id_weight(
-                    id_working_point=object_selections["electrons"]["cuts"][
+                    id_working_point=object_selection["electrons"]["cuts"][
                         "electrons_id"
                     ],
                 )
@@ -142,8 +142,8 @@ class ZToJets(processor.ProcessorABC):
                     weights=weights_container,
                     year=year,
                     variation=syst_var,
-                    id_wp=object_selections["muons"]["cuts"]["muons_id"],
-                    iso_wp=object_selections["muons"]["cuts"]["muons_iso"],
+                    id_wp=object_selection["muons"]["cuts"]["muons_id"],
+                    iso_wp=object_selection["muons"]["cuts"]["muons_iso"],
                 )
                 # add muon RECO weights
                 muon_corrector.add_reco_weight()
@@ -159,99 +159,107 @@ class ZToJets(processor.ProcessorABC):
                     events=events,
                     weights=weights_container,
                     year=year,
-                    tau_vs_jet=object_selections["taus"]["cuts"]["taus_vs_jet"],
-                    tau_vs_ele=object_selections["taus"]["cuts"]["taus_vs_ele"],
-                    tau_vs_mu=object_selections["taus"]["cuts"]["taus_vs_mu"],
+                    tau_vs_jet=object_selection["taus"]["cuts"]["taus_vs_jet"],
+                    tau_vs_ele=object_selection["taus"]["cuts"]["taus_vs_ele"],
+                    tau_vs_mu=object_selection["taus"]["cuts"]["taus_vs_mu"],
                     variation=syst_var,
                 )
                 tau_corrector.add_id_weight_deeptauvse()
                 tau_corrector.add_id_weight_deeptauvsmu()
                 tau_corrector.add_id_weight_deeptauvsjet()
             if syst_var == "nominal":
-                # save sum of weights before object_selections
+                # save sum of weights before object_selection
                 output["metadata"].update({"sumw": ak.sum(weights_container.weight())})
 
             # -------------------------------------------------------------
             # object selection
             # -------------------------------------------------------------
-            object_selector = ObjectSelector(object_selections, year)
+            object_selector = ObjectSelector(object_selection, year)
             objects = object_selector.select_objects(events)
 
             # -------------------------------------------------------------
             # event selection
             # -------------------------------------------------------------
-            event_selection = PackedSelection()
-            for selection, str_mask in event_selections.items():
-                event_selection.add(selection, eval(str_mask))
+            # itinialize selection manager
+            selection_manager = PackedSelection()
+            # add all selections to selector manager
+            for selection, mask in event_selection["selections"].items():
+                selection_manager.add(selection, eval(mask))
 
-            region_cuts = event_selections.keys()
-            region_selection = event_selection.all(*region_cuts)
-            nevents_after = ak.sum(region_selection)
+            categories = event_selection["categories"]
+            for category, category_cuts in categories.items():
+                # get selection mask by category
+                category_mask = selection_manager.all(*category_cuts)
+                nevents_after = ak.sum(category_mask)
 
-            if syst_var == "nominal":
-                # save cutflow to metadata
-                output["metadata"].update({"cutflow": {}})
-                selections = []
-                for cut_name in region_cuts:
-                    selections.append(cut_name)
-                    current_selection = event_selection.all(*selections)
-                    output["metadata"]["cutflow"][cut_name] = ak.sum(
-                        weights_container.weight()[current_selection]
+                if syst_var == "nominal":
+                    # save cutflow to metadata
+                    output["metadata"][category] = {"cutflow": {}}
+                    selections = []
+                    for cut_name in category_cuts:
+                        selections.append(cut_name)
+                        current_selection = selection_manager.all(*selections)
+                        output["metadata"][category]["cutflow"][cut_name] = ak.sum(
+                            weights_container.weight()[current_selection]
+                        )
+                    # save number of events after selection to metadata
+                    output["metadata"][category].update(
+                        {
+                            "weighted_final_nevents": ak.sum(
+                                weights_container.weight()[category_mask]
+                            ),
+                            "raw_final_nevents": nevents_after,
+                        }
                     )
-                # save number of events after selection to metadata
-                output["metadata"].update(
-                    {
-                        "weighted_final_nevents": ak.sum(
-                            weights_container.weight()[region_selection]
-                        ),
-                        "raw_final_nevents": nevents_after,
-                    }
-                )
-            # -------------------------------------------------------------
-            # analysis features
-            # -------------------------------------------------------------
-            # check that there are events left after selection
-            if nevents_after > 0:
-                # get analysis features
-                feature_map = {}
-                for feature, axis_info in self.histogram_config.axes.items():
-                    feature_map[feature] = eval(axis_info["expression"])[
-                        region_selection
-                    ]
                 # -------------------------------------------------------------
-                # histogram filling
+                # analysis features
                 # -------------------------------------------------------------
-                # break up the histogram filling for event-wise variations and object-wise variations
-                # apply event-wise variations only for nominal
-                if is_mc and syst_var == "nominal":
-                    # get event weight systematic variations for MC samples
-                    variations = ["nominal"] + list(weights_container.variations)
-                    for variation in variations:
-                        if variation == "nominal":
-                            region_weight = weights_container.weight()[region_selection]
-                        else:
-                            region_weight = weights_container.weight(
-                                modifier=variation
-                            )[region_selection]
+                # check that there are events left after selection
+                if nevents_after > 0:
+                    # get analysis features
+                    feature_map = {}
+                    for feature, axis_info in self.histogram_config.axes.items():
+                        feature_map[feature] = eval(axis_info["expression"])[
+                            category_mask
+                        ]
+                    # -------------------------------------------------------------
+                    # histogram filling
+                    # -------------------------------------------------------------
+                    # break up the histogram filling for event-wise variations and object-wise variations
+                    # apply event-wise variations only for nominal
+                    if is_mc and syst_var == "nominal":
+                        # get event weight systematic variations for MC samples
+                        variations = ["nominal"] + list(weights_container.variations)
+                        for variation in variations:
+                            if variation == "nominal":
+                                category_weight = weights_container.weight()[
+                                    category_mask
+                                ]
+                            else:
+                                category_weight = weights_container.weight(
+                                    modifier=variation
+                                )[category_mask]
+                            fill_histogram(
+                                histograms=hist_dict,
+                                histogram_config=self.histogram_config,
+                                feature_map=feature_map,
+                                weights=category_weight,
+                                variation=variation,
+                                category=category,
+                                flow=self.flow,
+                            )
+                    else:
+                        # fill Data/object-wise variations for MC samples
+                        category_weight = weights_container.weight()[category_mask]
                         fill_histogram(
                             histograms=hist_dict,
                             histogram_config=self.histogram_config,
                             feature_map=feature_map,
-                            weights=region_weight,
-                            variation=variation,
+                            weights=category_weight,
+                            variation=syst_var,
+                            category=category,
                             flow=self.flow,
                         )
-                else:
-                    # fill Data/object-wise variations for MC samples
-                    region_weight = weights_container.weight()[region_selection]
-                    fill_histogram(
-                        histograms=hist_dict,
-                        histogram_config=self.histogram_config,
-                        feature_map=feature_map,
-                        weights=region_weight,
-                        variation=syst_var,
-                        flow=self.flow,
-                    )
         # define output dictionary accumulator
         output["histograms"] = hist_dict
         return output
