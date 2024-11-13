@@ -133,14 +133,14 @@ class BTagCorrector:
 
             # add weights to Weights container
             self._weights.add(
-                name=f"{flavor}_jets",
+                name=f"btag_{flavor}",
                 weight=jets_weight,
                 weightUp=jets_weight_up,
                 weightDown=jets_weight_down,
             )
         else:
             self._weights.add(
-                name=f"{flavor}_jets",
+                name=f"btag_{flavor}",
                 weight=jets_weight,
             )
 

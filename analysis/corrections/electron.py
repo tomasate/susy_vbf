@@ -99,7 +99,7 @@ class ElectronCorrector:
             self.n,
         )
         self.weights.add(
-            name=f"ele_trigger",
+            name=f"electron_trigger",
             weight=nominal_sf,
         )
 
@@ -164,14 +164,14 @@ class ElectronCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"electron_id",
+                name=f"electron_id_{id_working_point}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"electron_id",
+                name=f"electron_id_{id_working_point}",
                 weight=nominal_sf,
             )
 

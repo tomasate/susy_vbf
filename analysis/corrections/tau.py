@@ -148,14 +148,14 @@ class TauCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"e -> tau_h fake rate_{self.tau_vs_ele}",
+                name=f"tau_vs_electron_{self.tau_vs_ele}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"e -> tau_h fake rate_{self.tau_vs_ele}",
+                name=f"tau_vs_electron_{self.tau_vs_ele}",
                 weight=nominal_sf,
             )
         return nominal_sf
@@ -210,14 +210,14 @@ class TauCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"mu -> tau_h fake rate_{self.tau_vs_mu}",
+                name=f"tau_vs_muon_{self.tau_vs_mu}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"mu -> tau_h fake rate_{self.tau_vs_mu}",
+                name=f"tau_vs_muon_{self.tau_vs_mu}",
                 weight=nominal_sf,
             )
         return nominal_sf
@@ -305,14 +305,14 @@ class TauCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"jet -> tau_h fake rate_{self.tau_vs_jet}_{flag}",
+                name=f"tau_vs_jet_{self.tau_vs_jet}_{flag}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"jet -> tau_h fake rate_{self.tau_vs_jet}_{flag}",
+                name=f"tau_vs_jet_{self.tau_vs_jet}_{flag}",
                 weight=nominal_sf,
             )
         return nominal_sf
@@ -389,14 +389,14 @@ class TauCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"trigger_{trigtype}",
+                name=f"tau_trigger_{trigtype}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"trigger_{trigtype}",
+                name=f"tau_trigger_{trigtype}",
                 weight=nominal_sf,
             )
         return nominal_sf

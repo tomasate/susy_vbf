@@ -216,14 +216,14 @@ class MuonCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"muon_id",
+                name=f"muon_id_{self.id_wp}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"muon_id",
+                name=f"muon_id_{self.id_wp}",
                 weight=nominal_sf,
             )
 
@@ -337,14 +337,14 @@ class MuonCorrector:
             )
             # add scale factors to weights container
             self.weights.add(
-                name=f"muon_iso",
+                name=f"muon_iso_{self.iso_wp}",
                 weight=nominal_sf,
                 weightUp=up_sf,
                 weightDown=down_sf,
             )
         else:
             self.weights.add(
-                name=f"muon_iso",
+                name=f"muon_iso_{self.iso_wp}",
                 weight=nominal_sf,
             )
 
