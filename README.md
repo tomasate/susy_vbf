@@ -73,7 +73,7 @@ optional arguments:
 ```
 Example:
 ```
-singularity shell -B /cvmfs -B /pnfs -B /user /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
+singularity shell -B /afs -B /eos -B /cvmfs /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
 
 python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos
 ``` 
