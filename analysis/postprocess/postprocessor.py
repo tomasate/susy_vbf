@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from coffea.processor import accumulate
-from analysis.postprocess.utils import open_output, print_header
+from analysis.configs import ProcessorConfigBuilder
+from analysis.postprocess.utils import open_output, print_header, df_to_latex
 
 
 class Postprocessor:
@@ -82,6 +83,9 @@ class Postprocessor:
             )
             logging.info("\n")
             results_df.to_csv(f"{output_path}/results_{category}.csv")
+            latex_table = df_to_latex(results_df)
+            with open(f'{output_path}/results_latex_{category}.txt', 'w') as f:
+                f.write(latex_table)
 
     def group_outputs(self):
         """
@@ -262,13 +266,13 @@ class Postprocessor:
         data_unc = results_df.loc["Data", "stat unc"]
         bkg = results_df.loc["Total Background", "events"]
         bkg_unc = results_df.loc["Total Background", "stat unc"]
-        results_df.loc["Data/Background", "events"] = data / bkg
-        results_df.loc["Data/Background", "stat unc"] = (data / bkg) * np.sqrt(
+        results_df.loc["Data/Total Background", "events"] = data / bkg
+        results_df.loc["Data/Total Background", "stat unc"] = (data / bkg) * np.sqrt(
             (data_unc / data) ** 2 + (bkg_unc / bkg) ** 2
         )
         # sort by percentage
         results_df = results_df.loc[
-            bkg_process + ["Total Background", "Data", "Data/Background"]
+            bkg_process + ["Total Background", "Data", "Data/Total Background"]
         ]
         results_df = results_df.sort_values(by="percentage", ascending=False)
 
