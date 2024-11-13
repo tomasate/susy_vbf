@@ -4,6 +4,7 @@ import awkward as ak
 import importlib.resources
 from coffea.lumi_tools import LumiMask
 from analysis.selections import trigger_match
+from coffea.analysis_tools import PackedSelection
 
 
 def get_metfilters_mask(events, year):
@@ -18,11 +19,11 @@ def get_metfilters_mask(events, year):
     return metfilters_mask
 
 
-def get_lumi_mask(events, lumimask):
+def get_lumi_mask(events, goldenjson):
     if hasattr(events, "genWeight"):
         lumi_mask = np.ones(len(events), dtype="bool")
     else:
-        lumi_info = LumiMask(lumimask)
+        lumi_info = LumiMask(goldenjson)
         lumi_mask = lumi_info(events.run, events.luminosityBlock)
     return lumi_mask
 
@@ -53,6 +54,7 @@ def get_stitching_mask(events, dataset, dataset_key, ht_value):
     if dataset.startswith(dataset_key):
         stitching_mask = events.LHE.HT < ht_value
     return stitching_mask
+
 
 def get_hemcleaning_mask(events):
     # hem-cleaning selection
@@ -85,4 +87,4 @@ def get_hemcleaning_mask(events):
         | ((np.random.rand(len(events)) < 0.632) & hasattr(events, "genWeight"))
     ) & (hem_veto)
 
-    return ~hem_cleaning
+    return ~hem_cleaning           
