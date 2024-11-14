@@ -38,10 +38,9 @@ class HistBuilder:
         histograms = {}
         for name, args in self.histogram_config.axes.items():
             axes = [self.build_axis({name: args})]
+            axes.append(self.category_axis)
             if self.histogram_config.add_syst_axis:
                 axes.append(self.syst_axis)
-            if self.histogram_config.add_cat_axis:
-                axes.append(self.cat_axis)
             if self.histogram_config.add_weight:
                 axes.append(hist.storage.Weight())
             histograms[name] = hist.Hist(*axes)
