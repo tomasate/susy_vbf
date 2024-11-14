@@ -81,7 +81,7 @@ event_selection:
     metfilters: get_metfilters_mask(events, year)
     dy_stitching: get_stitching_mask(events, dataset, 'DYJetsToLL_inclusive', 70)
     w_stitching: get_stitching_mask(events, dataset, 'WJetsToLNu_inclusive', 100)
-    0lstate: objects['met'].pt > 250
+    met: objects['met'].pt > 250
     two_muons: ak.num(objects['muons']) == 2
     one_dimuon: ak.num(objects['dimuons']) == 1
     muon_veto: ak.num(objects['veto_muons']) == 0
@@ -126,7 +126,6 @@ event_selection:
 histogram_config:
   add_syst_axis: true
   add_weight: true
-  add_cat_axis: null
   axes:
     muon_pt:
       type: Variable
@@ -193,6 +192,34 @@ histogram_config:
       stop: 4.7
       label: $\eta(j)$
       expression: objects['jets'].eta
+    jet_phi:
+      type: Regular
+      bins: 50
+      start: -3.14159
+      stop: 3.14159
+      label: $\phi(j)$
+      expression: objects['jets'].phi
+    jet_multiplicity:
+      type: IntCategory
+      categories:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5 
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      label: $N(j)$
+      expression: ak.num(objects['jets'])
     dijet_mass:
       type: Variable
       edges:
@@ -244,6 +271,9 @@ histogram_config:
     jets:
       - jet_pt
       - jet_eta
+      - jet_phi
+    njets:
+      - jet_multiplicity
     dijets:
       - dijet_mass
     met:
