@@ -34,8 +34,10 @@ def fill_histogram(
                 )
             else:
                 feature_array = normalize(feature_map[feature])
-
-            i
+            # check if axis type is IntCategory
+            if histogram_config.axes[feature]["type"] == "IntCategory":
+                # convert to integer array
+                feature_array = ak.to_numpy(feature_array).astype(int)
             fill_args = {
                 feature: feature_array,
                 "variation": variation,
@@ -59,7 +61,10 @@ def fill_histogram(
                     )
                 else:
                     fill_args[feature] = normalize(feature_map[feature])
-
+                # check if axis type is IntCategory
+                if histogram_config.axes[feature]["type"] == "IntCategory":
+                    # convert to integer array
+                    fill_args[feature] = ak.to_numpy(fill_args[feature]).astype(int)
             fill_args.update(
                 {
                     "variation": variation,
