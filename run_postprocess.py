@@ -117,7 +117,7 @@ if __name__ == "__main__":
         "--output_dir",
         dest="output_dir",
         type=str,
-        default="outs/ztojets/csplusvbf/2017",
+        default="",
         help="Path to the outputs directory (optional)",
     )
     parser.add_argument(
