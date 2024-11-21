@@ -34,7 +34,14 @@ def plot(args, processed_histograms, lumi):
     processor_config = config_builder.build_processor_config()
     histogram_config = processor_config.histogram_config
     # get variables to plot
-    variables = list(histogram_config.axes.keys())
+    variables = []
+    if histogram_config.layout == "individual":
+        variables = list(histogram_config.axes.keys())
+    else:
+        variables = []
+        for key, values in histogram_config.layout.items():
+            for v in values:
+                variables.append(v)
     # get region categories
     categories = processor_config.event_selection["categories"]
     print_header("Plots")
