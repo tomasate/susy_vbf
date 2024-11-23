@@ -21,6 +21,10 @@ class BTagCorrector:
 
     Parameters:
     -----------
+        events:
+            Events collection
+        weights:
+            Weights container from coffea.analysis_tools
         sf_type:
             scale factors type to use {mujets, comb}
             For the working point corrections the SFs in 'mujets' and 'comb' are for b/c jets.
@@ -29,19 +33,11 @@ class BTagCorrector:
             Hence, 'comb' SFs can be used everywhere, except for ttbar-dileptonic enriched analysis regions.
             For the ttbar-dileptonic regions the 'mujets' SFs should be used.
         worging_point:
-            worging point {'loose', 'medium', 'tight'}
+            worging point {loose, medium, tight}
         tagger:
-            tagger {'deepJet', 'deepCSV'}
+            tagger model {deepJet}
         year:
-            dataset year {'2016', '2017', '2018'}
-        year_mod:
-            year modifier {"", "APV"}
-        jets:
-            Jet collection
-        njets:
-            Number of jets to use
-        weights:
-            Weights container from coffea.analysis_tools
+            dataset year {2016preVFP, 2016postVFP, 2017, 2018}
         variation:
             if 'nominal' (default) add 'nominal', 'up' and 'down' variations to weights container. else, add only 'nominal' weights.
         full_run:
