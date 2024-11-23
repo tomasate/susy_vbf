@@ -7,7 +7,7 @@ from analysis.corrections.jetvetomaps import jetvetomaps_mask
 
 
 def delta_r_mask(first, second, threshold=0.4):
-    # select objects from 'first' which are at least 'threshold' away from all objects in 'second'.
+    """select objects from 'first' which are at least 'threshold' away from all objects in 'second'."""
     mval = first.metric_table(second)
     return ak.all(mval > threshold, axis=-1)
 
@@ -47,6 +47,10 @@ class ObjectSelector:
         selection_mask = ak.ones_like(self.objects[obj_name].pt, dtype=bool)
         # iterate over all cuts
         for selection, str_mask in cuts.items():
+            # cast 'str_mask' to str if needed
+            # for instance: 'taus_decaymode: 13'
+            if not isinstance(str_mask, str):
+                str_mask = str(str_mask)
             # check if 'str_mask' contains 'events' or 'objects'
             if "events" in str_mask or "objects" in str_mask:
                 # evaluate string expression for the mask
