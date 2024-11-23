@@ -3,14 +3,14 @@ import json
 from pathlib import Path
 
 
-def divide_list(lst: list) -> list:
+def divide_list(lst: list, nfiles) -> list:
     """Divide a list into sublists such that each sublist has at least 20 elements."""
-    if len(lst) < 20:
+    if len(lst) < nfiles:
         return [lst]
 
     # Dynamically calculate the number of sublists such that each has at least 20 elements
-    n = len(lst) // 20  # This gives the number of groups with at least 20 elements
-    if len(lst) % 20 != 0:
+    n = len(lst) // nfiles  # This gives the number of groups with at least 20 elements
+    if len(lst) % nfiles != 0:
         n += 1  # Increase n by 1 if there is a remainder, to accommodate extra elements
 
     # Divide the list into 'n' sublists

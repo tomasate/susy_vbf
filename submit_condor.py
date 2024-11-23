@@ -19,7 +19,8 @@ def main(args):
     fileset_path = Path(f"{Path.cwd()}/analysis/filesets")
     with open(f"{fileset_path}/fileset_{args['year']}_NANO_lxplus.json", "r") as f:
         root_files = json.load(f)[args["dataset"]]
-    root_files_list = divide_list(root_files)
+    root_files_list = divide_list(root_files, args["nfiles"])
+    del args["nfiles"]
 
     # submit job for each partition
     for i, partition in enumerate(root_files_list, start=1):
@@ -82,6 +83,13 @@ if __name__ == "__main__":
         "--eos",
         action="store_true",
         help="Enable saving outputs to /eos",
+    )
+    parser.add_argument(
+        "--nfiles",
+        dest="nfiles",
+        type=int,
+        default=20,
+        help="number of root files to include in each dataset partition (default 20)",
     )
     args = parser.parse_args()
     main(args)
