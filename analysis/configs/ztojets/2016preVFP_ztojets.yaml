@@ -33,7 +33,7 @@ object_selection:
       taus_vs_jet: loose
       taus_vs_ele: vvloose
       taus_vs_mu: loose
-      taus_decaymode: "13"
+      taus_decaymode: 13
       taus_electrons_dr: delta_r_mask(events.Tau, objects['electrons'], 0.3)
       taus_muons_dr: delta_r_mask(events.Tau, objects['muons'], 0.3)
   bjets:
@@ -42,7 +42,7 @@ object_selection:
       min_pt: events.Jet.pt > 30
       eta: np.abs(events.Jet.eta) < 2.4
       jets_id: tightlepveto
-      jets_deepjet: medium
+      jets_deepjet_b: medium
       jetsvetomaps: jetvetomaps_mask(events.Jet, '2016preVFP')
       jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'], 0.4)
       jets_muons_dr: delta_r_mask(events.Jet, objects['muons'], 0.4)
@@ -53,7 +53,7 @@ object_selection:
       min_pt: events.Jet.pt > 30
       eta: np.abs(events.Jet.eta) < 4.7
       jets_id: tightlepveto
-      jets_pileup: tight
+      jets_pileup_id: tight
       jetsvetomaps: jetvetomaps_mask(events.Jet, '2016preVFP')
       jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'], 0.4)
       jets_muons_dr: delta_r_mask(events.Jet, objects['muons'], 0.4)
