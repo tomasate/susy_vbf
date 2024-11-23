@@ -103,7 +103,7 @@ class ZToJets(processor.ProcessorABC):
                     jets=events.Jet,
                     weights=weights_container,
                     year=year,
-                    working_point=object_selection["jets"]["cuts"]["jets_pileup"],
+                    working_point=object_selection["jets"]["cuts"]["jets_pileup_id"],
                     variation=syst_var,
                 )
                 # b-tagging corrector
@@ -111,8 +111,7 @@ class ZToJets(processor.ProcessorABC):
                     events=events,
                     weights=weights_container,
                     sf_type="comb",
-                    worging_point=object_selection["bjets"]["cuts"]["jets_deepjet"],
-                    tagger="deepJet",
+                    worging_point=object_selection["bjets"]["cuts"]["jets_deepjet_b"],
                     year=year,
                     full_run=False,
                     variation=syst_var,
@@ -153,7 +152,7 @@ class ZToJets(processor.ProcessorABC):
                 muon_corrector.add_iso_weight()
                 # add trigger weights
                 muon_corrector.add_triggeriso_weight(hlt_paths)
-
+                
                 # add tau weights
                 tau_corrector = TauCorrector(
                     events=events,
@@ -170,13 +169,11 @@ class ZToJets(processor.ProcessorABC):
             if syst_var == "nominal":
                 # save sum of weights before object_selection
                 output["metadata"].update({"sumw": ak.sum(weights_container.weight())})
-
             # -------------------------------------------------------------
             # object selection
             # -------------------------------------------------------------
             object_selector = ObjectSelector(object_selection, year)
             objects = object_selector.select_objects(events)
-
             # -------------------------------------------------------------
             # event selection
             # -------------------------------------------------------------
@@ -212,14 +209,14 @@ class ZToJets(processor.ProcessorABC):
                         }
                     )
                 # -------------------------------------------------------------
-                # analysis features
+                # analysis variables
                 # -------------------------------------------------------------
                 # check that there are events left after selection
                 if nevents_after > 0:
-                    # get analysis features
-                    feature_map = {}
-                    for feature, axis_info in self.histogram_config.axes.items():
-                        feature_map[feature] = eval(axis_info["expression"])[
+                    # build analysis variables map
+                    variables_map = {}
+                    for variable, axis in self.histogram_config.axes.items():
+                        variables_map[variable] = eval(axis.expression)[
                             category_mask
                         ]
                     # -------------------------------------------------------------
@@ -242,7 +239,7 @@ class ZToJets(processor.ProcessorABC):
                             fill_histogram(
                                 histograms=hist_dict,
                                 histogram_config=self.histogram_config,
-                                feature_map=feature_map,
+                                variables_map=variables_map,
                                 weights=category_weight,
                                 variation=variation,
                                 category=category,
@@ -254,7 +251,7 @@ class ZToJets(processor.ProcessorABC):
                         fill_histogram(
                             histograms=hist_dict,
                             histogram_config=self.histogram_config,
-                            feature_map=feature_map,
+                            variables_map=variables_map,
                             weights=category_weight,
                             variation=syst_var,
                             category=category,
