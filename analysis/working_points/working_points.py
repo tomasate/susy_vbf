@@ -3,7 +3,9 @@ import awkward as ak
 
 
 class WorkingPoints:
-
+    # -------------------------------------------
+    # Muons
+    # -------------------------------------------
     def muons_id(self, events, wp):
         wps = {
             "highpt": events.Muon.highPtId == 2,
@@ -12,6 +14,10 @@ class WorkingPoints:
             "medium": events.Muon.mediumId,
             "tight": events.Muon.tightId,
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value for muon ID working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
     def muons_iso(self, events, wp):
@@ -32,8 +38,15 @@ class WorkingPoints:
                 else events.Muon.pfRelIso03_all < 0.15
             ),
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for muon ISO working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
+    # -------------------------------------------
+    # Electrons
+    # -------------------------------------------
     def electrons_id(self, events, wp):
         wps = {
             # mva ID working points https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2
@@ -46,6 +59,10 @@ class WorkingPoints:
             "medium": events.Electron.cutBased == 3,
             "tight": events.Electron.cutBased == 4,
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for electron ID working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
     def electrons_iso(self, events, wp):
@@ -67,8 +84,15 @@ class WorkingPoints:
                 else events.Electron.pfRelIso03_all < 0.15
             ),
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for electron ISO working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
+    # -------------------------------------------
+    # Taus
+    # -------------------------------------------
     def taus_vs_jet(self, events, wp):
         wps = {
             "vvvloose": events.Tau.idDeepTau2017v2p1VSjet > 1,
@@ -80,6 +104,10 @@ class WorkingPoints:
             "vtight": events.Tau.idDeepTau2017v2p1VSjet > 64,
             "vvtight": events.Tau.idDeepTau2017v2p1VSjet > 128,
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for DeepTauvsJet working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
     def taus_vs_ele(self, events, wp):
@@ -93,6 +121,10 @@ class WorkingPoints:
             "vtight": events.Tau.idDeepTau2017v2p1VSe > 64,
             "vvtight": events.Tau.idDeepTau2017v2p1VSe > 128,
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for DeepTauvsElectron working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
     def taus_vs_mu(self, events, wp):
@@ -102,10 +134,15 @@ class WorkingPoints:
             "medium": events.Tau.idDeepTau2017v2p1VSmu > 4,
             "tight": events.Tau.idDeepTau2017v2p1VSmu > 8,
         }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for DeepTauvsMuon working point. Please specify {list(wps.keys())}"
+            )
         return wps[wp]
 
     def taus_decaymode(self, events, wp):
-        prong_to_modes = {
+        # prong to mode map
+        wps = {
             "1": [0, 1, 2],
             "2": [5, 6, 7],
             "3": [10, 11],
@@ -113,18 +150,33 @@ class WorkingPoints:
             "12": [0, 1, 2, 5, 6, 7],
             "23": [5, 6, 7, 10, 11],
         }
-        if wp not in prong_to_modes:
+        if wp not in wps:
             raise ValueError(
-                "Invalid prong value. Please specify 1, 2, 3, 12, 13 or 23 for the prong parameter."
+                f"Invalid value {wp} for tau prong working point. Please specify {list(wps.keys())}"
             )
         tau_dm = events.Tau.decayMode
         decay_mode_mask = ak.zeros_like(tau_dm)
-        for mode in prong_to_modes[wp]:
+        for mode in wps[wp]:
             decay_mode_mask = np.logical_or(decay_mode_mask, tau_dm == mode)
         return decay_mode_mask
 
-    def jets_pileup(self, events, wp, year, min_pt):
-        puid_wps = {
+    # -------------------------------------------
+    # Jets
+    # -------------------------------------------
+    def jets_id(self, events, wp):
+        wps = {
+            "loose": events.Jet.jetId == 0,
+            "tight": events.Jet.jetId == 2,
+            "tightlepveto": events.Jet.jetId == 6,
+        }
+        if wp not in wps:
+            raise ValueError(
+                f"Invalid value {wp} for jet ID working point. Please specify {list(wps.keys())}"
+            )
+        return wps[wp]
+
+    def jets_pileup_id(self, events, wp, year):
+        wps = {
             "2016preVFP": {
                 "loose": events.Jet.puId == 1,
                 "medium": events.Jet.puId == 3,
@@ -146,25 +198,19 @@ class WorkingPoints:
                 "tight": events.Jet.puId == 7,
             },
         }
+        if wp not in wps[year]:
+            raise ValueError(
+                f"Invalid value {wp} for jet pileup ID working point. Please specify {list(wps[year].keys())}"
+            )
         # break up selection for low and high pT jets
         # to apply jets_pileup only to jets with pT < 50 GeV
-        low_pt_jets_mask = eval(min_pt) & (events.Jet.pt < 50) & puid_wps[year][wp]
-        high_pt_jets_mask = events.Jet.pt > 50
         return ak.where(
-            eval(min_pt) & (events.Jet.pt < 50),
-            low_pt_jets_mask,
-            high_pt_jets_mask,
+            events.Jet.pt < 50,
+            (events.Jet.pt < 50) & wps[year][wp],
+            events.Jet.pt > 50,
         )
 
-    def jets_id(self, events, wp):
-        id_wps = {
-            "loose": events.Jet.jetId == 0,
-            "tight": events.Jet.jetId == 2,
-            "tightlepveto": events.Jet.jetId == 6,
-        }
-        return id_wps[wp]
-
-    def jets_deepjet(self, events, wp, year):
+    def jets_deepjet_b(self, events, wp, year):
         wps = {
             "2016preVFP": {
                 "loose": events.Jet.btagDeepFlavB > 0.0508,
@@ -187,4 +233,8 @@ class WorkingPoints:
                 "tight": events.Jet.btagDeepFlavB > 0.71,
             },
         }
+        if wp not in wps[year]:
+            raise ValueError(
+                f"Invalid value {wp} for DeepJet b-tag working point. Please specify {list(wps[year].keys())}"
+            )
         return wps[year][wp]
