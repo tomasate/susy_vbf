@@ -206,7 +206,7 @@ class WorkingPoints:
         # to apply jets_pileup only to jets with pT < 50 GeV
         return ak.where(
             events.Jet.pt < 50,
-            (events.Jet.pt < 50) & wps[year][wp],
+            wps[year][wp],
             events.Jet.pt > 50,
         )
 
