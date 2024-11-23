@@ -1,4 +1,7 @@
+import re
 import json
+import glob
+import pathlib
 import correctionlib
 import numpy as np
 import awkward as ak
@@ -10,10 +13,11 @@ from analysis.working_points import working_points
 from analysis.corrections.utils import get_pog_json
 
 
-
 class BTagCorrector:
     """
     BTag corrector class.
+
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation
 
     Parameters:
     -----------
@@ -23,7 +27,7 @@ class BTagCorrector:
             The 'mujets' SFs contain only corrections derived in QCD-enriched regions.
             The 'comb' SFs contain corrections derived in QCD and ttbar-enriched regions.
             Hence, 'comb' SFs can be used everywhere, except for ttbar-dileptonic enriched analysis regions.
-            For the ttbar-dileptonic regionsthe 'mujets' SFs should be used.
+            For the ttbar-dileptonic regions the 'mujets' SFs should be used.
         worging_point:
             worging point {'loose', 'medium', 'tight'}
         tagger:
@@ -63,37 +67,63 @@ class BTagCorrector:
     ) -> None:
         self._sf = sf_type
         self._year = year
-        self._tagger = tagger
         self._wp = worging_point
         self._weights = weights
         self._full_run = full_run
         self._variation = variation
-        self._wp_map = {"tight": "T", "medium": "M", "loose": "L"}
+        self._tagger = "deepJet"
 
+        # check available btag SFs
+        self._taggers = {"deepJet": {"tight": "T", "medium": "M", "loose": "L"}}
+        if self._wp not in self._taggers[self._tagger]:
+            raise ValueError(
+                f"There are no available b-tag SFs for the working point. Please specify {self._taggers[self._tagger]}"
+            )
+
+        # check available btag efficiencies (btag_eff_<tagger>_<wp>_<year>.coffea)
+        cwd = pathlib.Path().cwd()
+        data_dir = cwd / "analysis/data"
+        file_paths = glob.glob(f"{str(data_dir)}/btag_eff*")
+        wps = set()
+        years = set()
+        for path in file_paths:
+            wp_match = re.search(rf"{self._tagger}_(.*?)_", path)
+            year_match = re.search(r"_(\d{4}(?:preVFP|postVFP)?)\.coffea", path)
+            if wp_match:
+                wps.add(wp_match.group(1))
+            if year_match:
+                years.add(year_match.group(1))
+        if self._wp not in wps:
+            raise ValueError(
+                f"There are no b-tag efficiency for {self._wp} working point. Please specify {wps}"
+            )
+        if self._year not in years:
+            raise ValueError(
+                f"There are no b-tag efficiency for year {self._year}. Please specify {years}"
+            )
         # load efficiency lookup table (only for deepJet)
         # efflookup(pt, |eta|, flavor)
         with importlib.resources.path(
             "analysis.data",
-            f"btag_eff_{self._tagger}_{self._wp_map[self._wp]}_{year}.coffea",
+            f"btag_eff_deepJet_{self._wp}_{year}.coffea",
         ) as filename:
             self._efflookup = util.load(str(filename))
-        # load btagging working point (only for deepJet)
-        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation
 
         # define correction set
         self._cset = correctionlib.CorrectionSet.from_file(
             get_pog_json(json_name="btag", year=year)
         )
-        # bc and light jets
+
+        # select bc and light jets
         # hadron flavor definition: 5=b, 4=c, 0=udsg
         self._bc_jets = events.Jet[events.Jet.hadronFlavour > 0]
         self._light_jets = events.Jet[events.Jet.hadronFlavour == 0]
         self._jet_map = {"bc": self._bc_jets, "light": self._light_jets}
         self._jet_pass_btag = {
-            "bc": working_points.jets_deepjet(events, self._wp, year)[
+            "bc": working_points.jets_deepjet_b(events, self._wp, year)[
                 events.Jet.hadronFlavour > 0
             ],
-            "light": working_points.jets_deepjet(events, self._wp, year)[
+            "light": working_points.jets_deepjet_b(events, self._wp, year)[
                 events.Jet.hadronFlavour == 0
             ],
         }
@@ -190,7 +220,7 @@ class BTagCorrector:
 
         sf = self._cset[cset_keys[flavor]].evaluate(
             syst,
-            self._wp_map[self._wp],
+            self._taggers[self._tagger][self._wp],
             np.array(jets_hadron_flavour),
             np.array(jets_eta),
             np.array(jets_pt),
