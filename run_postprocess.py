@@ -10,65 +10,13 @@ from analysis.postprocess.postprocessor import Postprocessor
 from analysis.postprocess.utils import print_header, setup_logger
 
 
-def clear_output_directory(output_dir):
-    """Delete all result files in the output directory."""
-    extensions = ["*.csv", "*.txt", "*.png", "*.pdf"]
-    for ext in extensions:
-        files = glob.glob(os.path.join(output_dir, ext))
-        for file in files:
-            os.remove(file)
-
-
-def plot(args, processed_histograms, lumi):
-    # initialize plotter
-    plotter = Plotter(
-        processor=args.processor,
-        processed_histograms=processed_histograms,
-        year=args.year,
-        lumi=lumi,
-        output_dir=args.output_dir,
-    )
-
-    # get histogram config
-    config_builder = ProcessorConfigBuilder(processor=args.processor, year=args.year)
-    processor_config = config_builder.build_processor_config()
-    histogram_config = processor_config.histogram_config
-    # get variables to plot
-    variables = []
-    if histogram_config.layout == "individual":
-        variables = list(histogram_config.axes.keys())
-    else:
-        variables = []
-        for key, values in histogram_config.layout.items():
-            for v in values:
-                variables.append(v)
-    # get region categories
-    categories = processor_config.event_selection["categories"]
-    print_header("Plots")
-    for category in categories:
-        logging.info(f"plotting histograms for category: {category}")
-        for variable in variables:
-            logging.info(variable)
-            plotter.plot_histograms(
-                variable=variable,
-                category=category,
-                yratio_limits=(0, 2),
-                log_scale=args.log_scale,
-                savefig=True,
-            )
-
-
 def main(args):
     if not args.output_dir:
         args.output_dir = get_output_directory(vars(args))
 
-    # delete previous results
-    clear_output_directory(args.output_dir)
-
-    # set up logger
     setup_logger(args.output_dir)
 
-    # save processor config
+    # load and save processor config
     config_builder = ProcessorConfigBuilder(processor=args.processor, year=args.year)
     processor_config = config_builder.build_processor_config()
     logging.info(processor_config.to_yaml())
@@ -82,8 +30,26 @@ def main(args):
     processed_histograms = postprocessor.histograms
     lumi = postprocessor.luminosities[args.year]
 
-    # plot histograms
-    plot(args, processed_histograms, lumi)
+    # plot processed histograms
+    print_header("Plots")
+    plotter = Plotter(
+        processor=args.processor,
+        processed_histograms=processed_histograms,
+        year=args.year,
+        lumi=lumi,
+        output_dir=args.output_dir,
+    )
+    for category in postprocessor.categories:
+        logging.info(f"plotting histograms for category: {category}")
+        for variable in processor_config.histogram_config.variables:
+            logging.info(variable)
+            plotter.plot_histograms(
+                variable=variable,
+                category=category,
+                yratio_limits=args.yratio_limits,
+                log_scale=args.log_scale,
+                savefig=True,
+            )
 
 
 if __name__ == "__main__":
@@ -100,7 +66,7 @@ if __name__ == "__main__":
         dest="year",
         type=str,
         default="2017",
-        help="year of the data {2017}",
+        help="year of the data {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)",
     )
     parser.add_argument(
         "--label",
@@ -114,16 +80,24 @@ if __name__ == "__main__":
         help="Enable reading outputs from /eos",
     )
     parser.add_argument(
+        "--log_scale",
+        action="store_true",
+        help="Enable log scale for y-axis",
+    )
+    parser.add_argument(
+        "--yratio_limits",
+        dest="yratio_limits",
+        type=float,
+        nargs=2,
+        default=(0, 2),
+        help="Set y-axis ratio limits as a tuple (e.g., --yratio_limits 0.5 1.5) (default 0 2)",
+    )
+    parser.add_argument(
         "--output_dir",
         dest="output_dir",
         type=str,
         default="",
         help="Path to the outputs directory (optional)",
-    )
-    parser.add_argument(
-        "--log_scale",
-        action="store_true",
-        help="Enable log scale for y-axis",
     )
     args = parser.parse_args()
     main(args)
