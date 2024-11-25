@@ -58,7 +58,8 @@ Outputs will be save to `/eos/user/<username first letter>/<username>/susy_vbf/o
 
 Once you have run the corresponding datasets for the processor, you can get the results using the `run_postprocess.py` script:
 ```bash
-usage: run_postprocess.py [-h] [--processor PROCESSOR] [--year YEAR] [--label LABEL] [--eos] [--output_dir OUTPUT_DIR] [--log_scale]
+usage: run_postprocess.py [-h] [--processor PROCESSOR] [--year YEAR] [--label LABEL] [--eos] [--log_scale] [--yratio_limits YRATIO_LIMITS YRATIO_LIMITS]
+                          [--output_dir OUTPUT_DIR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -67,14 +68,16 @@ optional arguments:
   --year YEAR           year of the data {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)
   --label LABEL         Label of the output directory
   --eos                 Enable reading outputs from /eos
+  --log_scale           Enable log scale for y-axis
+  --yratio_limits YRATIO_LIMITS YRATIO_LIMITS
+                        Set y-axis ratio limits as a tuple (e.g., --yratio_limits 0.5 1.5) (default 0 2)
   --output_dir OUTPUT_DIR
                         Path to the outputs directory (optional)
-  --log_scale           Enable log scale for y-axis
 ```
 Example:
 ```
 singularity shell -B /afs -B /eos -B /cvmfs /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
 
-python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos
+python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos --log_scale yratio_limits 0 2
 ``` 
-You can also add the `--log_scale` flag to change the y-axis to log scale. Results will be saved to the same directory as the output files
+Results will be saved to the same directory as the output files
