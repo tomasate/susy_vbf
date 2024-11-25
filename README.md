@@ -78,6 +78,6 @@ Example:
 ```
 singularity shell -B /afs -B /eos -B /cvmfs /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-base-almalinux8:0.7.22-py3.8
 
-python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos --log_scale yratio_limits 0 2
+python3 run_postprocess.py --processor ztojets --year 2017 --label test --eos --log_scale --yratio_limits 0 2
 ``` 
 Results will be saved to the same directory as the output files
