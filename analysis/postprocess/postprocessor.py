@@ -25,12 +25,10 @@ class Postprocessor:
         fileset_path = Path(f"{main_dir}/analysis/filesets")
         with open(f"{fileset_path}/{year}_fileset.yaml", "r") as f:
             self.dataset_config = yaml.safe_load(f)
-
         # get categories
         config_builder = ProcessorConfigBuilder(processor=processor, year=year)
         processor_config = config_builder.build_processor_config()
         self.categories = processor_config.event_selection["categories"]
-
         # run postprocessor
         self.run_postprocess()
 
@@ -57,9 +55,11 @@ class Postprocessor:
             logging.info(f"category: {category}")
             processed_cutflow = self.group_by_process(self.scaled_cutflow[category])
             self.cutflow_df = pd.DataFrame(processed_cutflow)
+            # add total background events to cutflow
             self.cutflow_df["Total Background"] = self.cutflow_df.drop(
                 columns="Data"
             ).sum(axis=1)
+            # sort cutflow to show 'Data' and 'Total Background' first
             self.cutflow_df = self.cutflow_df[
                 ["Data", "Total Background"]
                 + [
