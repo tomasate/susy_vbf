@@ -30,6 +30,7 @@ def divide_by_binwidth(histogram):
     bin_width = histogram.axes.edges[0][1:] - histogram.axes.edges[0][:-1]
     return histogram / bin_width
 
+
 def df_to_latex(df):
     # Initialize LaTeX table output
     output = """
@@ -67,7 +68,6 @@ def df_to_latex(df):
             syst_unc_f = 'nan'
 
         # Add sample rows to LaTeX output
-        print(f"{label=}")
         if label not in ['Data', 'Total Background', 'Data/Total Background']:
             output += f"{label} & ${events_f} \\pm {stat_unc_f} \\,(\\text{{stat}}) \\pm {syst_unc_f} \\,(\\text{{syst}})$\\\\\n"
 
