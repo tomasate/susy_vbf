@@ -51,16 +51,6 @@ class Plotter:
         )
         self.color_map = {process: color for process, color in zip(processes, colors)}
 
-    def get_variable_label(self, variable):
-        if variable in self.histogram_config.axes:
-            variable_label = self.histogram_config.axes[variable].label
-        else:
-            for key in self.histogram_config.axes:
-                if variable in self.histogram_config[key]:
-                    variable_label = self.histogram_config[key][variable]["label"]
-                    break
-        return variable_label
-
     def get_histogram(
         self,
         process,
@@ -185,17 +175,10 @@ class Plotter:
         return labels, colors
 
     def plot_uncert_band(self, histogram_info, ax):
-        # get up and down stat uncertainty per bin
-        # nom_stat_down, nom_stat_up = poisson_interval(
-        #    values=self.nominal_values, variances=self.nominal_variances
-        # )
         # initialize up/down errors with statisticall error
-        # mcstat_err2_up = np.abs(nom_stat_up - self.nominal_values) ** 2
-        # mcstat_err2_down = np.abs(nom_stat_down - self.nominal_values) ** 2
-        mcstat_err2_up = self.nominal_variances
-        mcstat_err2_down = self.nominal_variances
-        err2_up = mcstat_err2_up
-        err2_down = mcstat_err2_down
+        mcstat_err2 = self.nominal_variances
+        err2_up = mcstat_err2
+        err2_down = mcstat_err2
         for variation in self.get_variations_keys():
             # Up/down variations for a single MC sample
             var_up = histogram_info["variations"][f"{variation}Up"].values()
@@ -242,9 +225,6 @@ class Plotter:
         num_variances = self.data_variances
         ratio_variance = num_variances * np.power(den, -2)
         ratio_uncert = np.abs(poisson_interval(ratio, ratio_variance) - ratio)
-        ratio_uncert[np.isnan(ratio_uncert)] = np.inf
-        np.nan_to_num(ratio, copy=False)
-        np.nan_to_num(ratio_uncert, copy=False)
         # plot ratio and x-y errors
         xerr = self.edges[1:] - self.edges[:-1]
         rax.errorbar(
@@ -254,9 +234,11 @@ class Plotter:
             yerr=ratio_uncert,
             **self.style["ratio_error_kwargs"],
         )
-        # plot ratio uncertaity band
-        ratio_up = np.concatenate([[0], self.band_up / self.nominal_values])
-        ratio_down = np.concatenate([[0], self.band_down / self.nominal_values])
+        # plot ratio uncertainty band
+        ratio_up = np.concatenate([[0], self.band_up / den])
+        ratio_down = np.concatenate([[0], self.band_down / den])
+        ratio_up[np.isnan(ratio_up)] = 1.0
+        ratio_down[np.isnan(ratio_down)] = 1.0
         ratio_uncertainty_band = rax.fill_between(
             self.edges,
             ratio_up,
@@ -348,7 +330,7 @@ class Plotter:
         formatter.set_scientific(False)
         ax.yaxis.set_major_formatter(formatter)
         rax.set(
-            xlabel=self.get_variable_label(variable),
+            xlabel=self.histogram_config.axes[variable].label,
             ylabel="Data / Pred",
             facecolor="white",
         )
