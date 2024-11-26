@@ -42,6 +42,7 @@ def get_command(args: dict) -> str:
 
 def get_jobpath(args: dict) -> str:
     path = args["processor"]
+    path += f'/{args["label"]}'
     path += f'/{args["year"]}'
     path += f'/{args["dataset"]}'
     return path
@@ -64,6 +65,7 @@ def submit_condor(args: dict, submit: bool) -> None:
     jobpath = get_jobpath(args)
     jobname = get_jobname(args)
     print(f"creating condor files {jobname}")
+    del args['label']
 
     # create logs and condor directories
     log_dir = Path(f"{str(condor_dir)}/logs/{jobpath}")
