@@ -11,7 +11,6 @@ def main(args):
     args = vars(args)
     submit = eval(args["submit"])
     args["output_path"] = get_output_directory(args)
-    del args["label"]
     del args["eos"]
     del args["submit"]
 
