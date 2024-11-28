@@ -16,7 +16,7 @@ def main(args):
     print(f"Reading outputs from: {out_path}")
 
     # get datasets
-    fileset_path = Path(f"{main_dir}/analysis/filesets")
+    fileset_path = main_dir / "analysis" / "filesets"
     with open(f"{fileset_path}/{args.year}_fileset.yaml", "r") as f:
         datasets = yaml.safe_load(f)
 
