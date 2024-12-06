@@ -3,7 +3,7 @@ import correctionlib
 import numpy as np
 import awkward as ak
 from analysis.corrections.utils import get_pog_json
-from analysis.corrections.met import update_met
+from analysis.corrections.met import corrected_polar_met
 
 # ----------------------------------------------------------------------------------- #
 # -- The tau energy scale (TES) corrections for taus are provided  ------------------ #
@@ -86,4 +86,14 @@ def apply_tau_energy_scale_corrections(
     events["Tau", "mass"] = tau_mass
 
     # propagate tau pT corrections to MET
-    update_met(events=events, lepton="Tau")
+    # propagate muon pT corrections to MET
+    corrected_met_pt, corrected_met_phi = corrected_polar_met(
+        met_pt=events.MET.pt, 
+        met_phi=events.MET.phi, 
+        other_phi=events.Tau.phi, 
+        other_pt_old=events.Tau.pt_raw, 
+        other_pt_new=events.Tau.pt
+    )
+    # update MET fields
+    events["MET", "pt"] = corrected_met_pt
+    events["MET", "phi"] = corrected_met_phi

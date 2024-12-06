@@ -1,6 +1,6 @@
 import numpy as np
 import awkward as ak
-from analysis.corrections.met import update_met
+from analysis.corrections.met import corrected_polar_met
 from coffea.lookup_tools import txt_converters, rochester_lookup
 
 
@@ -88,4 +88,13 @@ def apply_rochester_corrections(
     events["Muon", "pt"] = events.Muon.pt_rochester
 
     # propagate muon pT corrections to MET
-    update_met(events=events, lepton="Muon")
+    corrected_met_pt, corrected_met_phi = corrected_polar_met(
+        met_pt=events.MET.pt, 
+        met_phi=events.MET.phi, 
+        other_phi=events.Muon.phi, 
+        other_pt_old=events.Muon.pt_raw, 
+        other_pt_new=events.Muon.pt
+    )
+    # update MET fields
+    events["MET", "pt"] = corrected_met_pt
+    events["MET", "phi"] = corrected_met_phi
