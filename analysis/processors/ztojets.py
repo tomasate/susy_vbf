@@ -5,6 +5,7 @@ from coffea.analysis_tools import PackedSelection, Weights
 from analysis.configs import ProcessorConfigBuilder
 from analysis.histograms import HistBuilder, fill_histogram
 from analysis.corrections.jec import apply_jet_corrections
+from analysis.corrections.jerc import JERCorrector
 from analysis.corrections.rochester import apply_rochester_corrections
 from analysis.corrections.tau_energy import apply_tau_energy_scale_corrections
 from analysis.corrections.pileup import add_pileup_weight
@@ -65,9 +66,24 @@ class ZToJets(processor.ProcessorABC):
             # -------------------------------------------------------------
             # object corrections
             # -------------------------------------------------------------
+            apply_jec = True
+            apply_jer = False
+            apply_jec_syst = False
+            apply_jer_syst = False
+            if is_mc:
+                apply_jer = True
+            jerc_corrector = JERCorrector(
+                events=events, 
+                year=self.year, 
+                dataset=dataset, 
+                apply_jec=apply_jec, 
+                apply_jer=apply_jer, 
+                apply_jec_syst=apply_jec_syst, 
+                apply_jer_syst=apply_jer_syst
+            )
             if is_mc:
                 # apply JEC/JER corrections to jets (in data, the corrections are already applied)
-                apply_jet_corrections(events, year)
+                # apply_jet_corrections(events, year)
                 # apply energy corrections to taus (only to MC)
                 apply_tau_energy_scale_corrections(
                     events=events, year=year, variation=syst_var
@@ -152,7 +168,7 @@ class ZToJets(processor.ProcessorABC):
                 muon_corrector.add_iso_weight()
                 # add trigger weights
                 muon_corrector.add_triggeriso_weight(hlt_paths)
-                
+
                 # add tau weights
                 tau_corrector = TauCorrector(
                     events=events,
@@ -216,9 +232,7 @@ class ZToJets(processor.ProcessorABC):
                     # build analysis variables map
                     variables_map = {}
                     for variable, axis in self.histogram_config.axes.items():
-                        variables_map[variable] = eval(axis.expression)[
-                            category_mask
-                        ]
+                        variables_map[variable] = eval(axis.expression)[category_mask]
                     # -------------------------------------------------------------
                     # histogram filling
                     # -------------------------------------------------------------
