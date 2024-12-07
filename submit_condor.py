@@ -9,7 +9,7 @@ from analysis.helpers import get_output_directory
 
 def main(args):
     args = vars(args)
-    submit = eval(args["submit"])
+    submit = args["submit"]
     args["output_path"] = get_output_directory(args)
     del args["eos"]
     del args["submit"]
