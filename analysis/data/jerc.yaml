@@ -1,0 +1,62 @@
+jec_version:
+  '2017':
+    RunB: Summer19UL17_RunB_V5_DATA
+    RunC: Summer19UL17_RunC_V5_DATA
+    RunD: Summer19UL17_RunD_V5_DATA
+    RunE: Summer19UL17_RunE_V5_DATA
+    RunF: Summer19UL17_RunF_V5_DATA
+    MC: Summer19UL17_V5_MC
+  '2018':
+    RunA: Summer19UL18_RunA_V5_DATA
+    RunB: Summer19UL18_RunB_V5_DATA
+    RunC: Summer19UL18_RunC_V5_DATA
+    RunD: Summer19UL18_RunD_V5_DATA
+    MC: Summer19UL18_V5_MC
+  '2016preVFP':
+    RunB: Summer19UL16APV_RunBCD_V7_DATA
+    RunC: Summer19UL16APV_RunBCD_V7_DATA
+    RunD: Summer19UL16APV_RunBCD_V7_DATA
+    RunE: Summer19UL16APV_RunEF_V7_DATA
+    RunF: Summer19UL16APV_RunEF_V7_DATA
+    MC: Summer19UL16APV_V7_MC
+  '2016postVFP':
+    RunF: Summer19UL16_RunFGH_V7_DATA
+    RunG: Summer19UL16_RunFGH_V7_DATA
+    RunH: Summer19UL16_RunFGH_V7_DATA
+    MC: Summer19UL16_V7_MC
+algorithm:
+  '2016preVFP': AK4PFchs
+  '2016postVFP': AK4PFchs
+  '2017': AK4PFchs
+  '2018': AK4PFchs
+jec_level:
+  L1: L1FastJet
+  L2: L2Relative
+  L3: L3Absolute
+  compound: L1L2L3Res
+  uncert: Total
+jec_input_map:
+  L1:
+    JetA: area
+    JetEta: eta
+    JetPt: pt_raw
+    Rho: rho
+  L2:
+    JetEta: eta
+    JetPt: pt_l1
+  L3:
+    JetEta: eta
+    JetPt: pt_l12
+  compound:
+    JetA: area
+    JetEta: eta
+    JetPt: pt_raw
+    Rho: rho
+  uncert:
+    JetEta: eta
+    JetPt: pt
+jer_version:
+  '2016preVFP': Summer20UL16APV_JRV3_MC
+  '2016postVFP': Summer20UL16_JRV3_MC
+  '2017': Summer19UL17_JRV2_MC
+  '2018': Summer19UL18_JRV2_MC
