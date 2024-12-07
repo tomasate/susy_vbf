@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     datasets = background_samples + data_samples[args.processor][args.year]
     for dataset in datasets:
-        cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {label} --nfiles {args.nfiles}"
+        cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {args.label} --nfiles {args.nfiles}"
         if args.submit:
             cmd += " --submit"
         if args.eos:
