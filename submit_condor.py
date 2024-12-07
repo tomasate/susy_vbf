@@ -66,10 +66,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--submit",
-        dest="submit",
-        type=str,
-        default="True",
-        help="if True submit job to Condor. If False, it just builds datasets and condor files (default True)",
+        action="store_true",
+        help="Enable Condor job submission. If not provided, it just builds condor files",
     )
     parser.add_argument(
         "--label",
