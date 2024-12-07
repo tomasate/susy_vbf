@@ -283,15 +283,30 @@ SingleElectron:
   - SingleElectron/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   - SingleElectron/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   xsec: null
-SingleMuon:
+SingleMuonB:
   is_mc: false
   process: Data
-  query:
-  - SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  query: SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleMuonC:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleMuonD:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleMuonE:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleMuonF:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   xsec: null
 TTTo2L2Nu:
   is_mc: true
