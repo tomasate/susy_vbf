@@ -168,15 +168,15 @@ def get_jer_cset(jer_ptres_tag: str, jer_sf_tag: str, year: str):
 
 
 def get_era(input_str):
-    # Check if the input string starts with "Muon" or "EGamma"
+    # Check if the input string starts with "SingleMuon", "EGamma", "Tau" or "MET"
     if (
-        input_str.startswith("Muon")
+        input_str.startswith("SingleMuon")
         or input_str.startswith("EGamma")
         or input_str.startswith("Tau")
         or input_str.startswith("MET")
     ):
         match = re.search(
-            r"Muon([A-Za-z])|EGamma([A-Za-z])|Tau([A-Za-z])|MET([A-Za-z])", input_str
+            r"SingleMuon([A-Za-z])|EGamma([A-Za-z])|Tau([A-Za-z])|MET([A-Za-z])", input_str
         )
         if match:
             # Return the first matched group (the letter following "Muon" or "EGamma")
