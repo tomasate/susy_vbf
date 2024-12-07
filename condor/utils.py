@@ -30,7 +30,7 @@ def get_command(args: dict) -> str:
     cmd = f"python submit.py"
     for arg in args:
         if args[arg]:
-            if arg in ["dataset", "nsample"]:
+            if arg in ["dataset", "nsample", "label"]:
                 continue
             elif arg == "partition_fileset":
                 partition_fileset = args["partition_fileset"]
@@ -65,7 +65,6 @@ def submit_condor(args: dict, submit: bool) -> None:
     jobpath = get_jobpath(args)
     jobname = get_jobname(args)
     print(f"creating condor files {jobname}")
-    del args['label']
 
     # create logs and condor directories
     log_dir = Path(f"{str(condor_dir)}/logs/{jobpath}")
