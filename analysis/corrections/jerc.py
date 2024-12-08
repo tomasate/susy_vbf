@@ -116,7 +116,7 @@ class JERCorrector:
         # get correction file name by jec level and era
         jec_corr_key = "_".join(
             [
-                self.jerc_data["jec_version"][self.year][f"Run{self.era}"],
+                self.jerc_data["jec_version"][self.year][self.era],
                 self.jerc_data["jec_level"][level],
                 self.jerc_data["algorithm"][self.year],
             ]
