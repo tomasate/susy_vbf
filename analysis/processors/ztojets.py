@@ -82,7 +82,7 @@ class ZToJets(processor.ProcessorABC):
                 apply_jec_syst=apply_jec_syst, 
                 apply_jer_syst=apply_jer_syst
             )
-            """"
+            """
             if is_mc:
                 # apply JEC/JER corrections to jets (in data, the corrections are already applied)
                 apply_jet_corrections(events, year)
