@@ -9,10 +9,18 @@ from analysis.corrections.utils import get_pog_json, get_jer_cset, get_era
 from analysis.selections.object_selections import delta_r_mask
 
 
-
 class JERCorrector:
 
-    def __init__(self, events, year, dataset, apply_jec, apply_jer, apply_jec_syst=False, apply_jer_syst=False):
+    def __init__(
+        self,
+        events,
+        year,
+        dataset,
+        apply_jec,
+        apply_jer,
+        apply_jec_syst=False,
+        apply_jer_syst=False,
+    ):
         self.events = events
         self.year = year
         self.era = get_era(dataset)
@@ -20,12 +28,12 @@ class JERCorrector:
         self.apply_jer = apply_jer
         self.apply_jec_syst = apply_jec_syst
         self.apply_jer_syst = apply_jer_syst
-        
+
         # load jerc data
         jerc_data_path = Path.cwd() / "analysis" / "data"
         with open(f"{jerc_data_path}/jerc.yaml", "r") as f:
             self.jerc_data = yaml.safe_load(f)
-            
+
         # prepare input variables
         self.events["Jet", "pt_raw"] = self.events.Jet.pt * (
             1 - self.events.Jet.rawFactor
@@ -59,8 +67,9 @@ class JERCorrector:
             self.apply_met_jer_corr()
         if self.apply_jec_syst:
             self.apply_jec_syst_corr()
-    
+
     def apply_jec_corr(self):
+        self.events["Jet", "idx"] = ak.local_index(self.events.Jet, axis=1)
         # get jec compound scale factor
         compound_sf = self.get_jec_sf(level="compound")
         # get jec pT and mass
@@ -69,8 +78,7 @@ class JERCorrector:
         # update nominal pT and mass
         self.events["Jet", "pt"] = self.events.Jet.pt_jec
         self.events["Jet", "mass"] = self.events.Jet.mass_jec
-        
-        
+
     def apply_jec_syst_corr(self):
         sf_delta = self.get_jec_sf(level="uncert")
         # divide by correction since it is already applied before
@@ -81,25 +89,44 @@ class JERCorrector:
         self.events["Jet", "mass_jec_up"] = self.events.Jet.mass * corr_up_variation
         self.events["Jet", "mass_jec_down"] = self.events.Jet.mass * corr_down_variation
 
-        
     def apply_jer_corr(self):
         # get jer scale factor
         smearing = self.get_jer_sf("nom")
+        # check that smeared jet energy remains positive as the direction of the jet would change otherwise
+        smearing_pt = ak.where(
+            smearing * self.events.Jet.E < 0.01, 0.01 / self.events.Jet.E, smearing
+        )
+        smearing_mass = ak.where(
+            smearing * self.events.Jet.mass_jec < 0.01, 0.01, smearing
+        )
         # set jer pT and mass
-        self.events["Jet", "pt_jer"] = smearing * self.events.Jet.pt_jec
-        self.events["Jet", "mass_jer"] = smearing * self.events.Jet.mass_jec
+        self.events["Jet", "pt_jer"] = smearing_pt * self.events.Jet.pt_jec
+        self.events["Jet", "mass_jer"] = smearing_mass * self.events.Jet.mass_jec
         # update nominal pT and mass
         self.events["Jet", "pt"] = self.events.Jet.pt_jer
         self.events["Jet", "mass"] = self.events.Jet.mass_jer
-        
         # get jer variations
         if self.apply_jer_syst:
             for variation in ["up", "down"]:
                 smearing_variation = self.get_jer_sf(variation)
-                self.events["Jet", f"pt_jer_{variation}"] = smearing_variation * self.events.Jet.pt_jec
-                self.events["Jet", f"mass_jer_{variation}"] = smearing_variation * self.events.Jet.mass_jec
-        
-            
+                # check that smeared jet energy remains positive as the direction of the jet would change otherwise
+                smearing_pt = ak.where(
+                    smearing_variation * self.events.Jet.E < 0.01,
+                    0.01 / self.events.Jet.E,
+                    smearing_variation,
+                )
+                smearing_mass = ak.where(
+                    smearing_variation * self.events.Jet.mass_jec < 0.01,
+                    0.01,
+                    smearing_variation,
+                )
+                self.events["Jet", f"pt_jer_{variation}"] = (
+                    smearing_variation * self.events.Jet.pt_jec
+                )
+                self.events["Jet", f"mass_jer_{variation}"] = (
+                    smearing_variation * self.events.Jet.mass_jec
+                )
+
     def get_jec_sf(self, level: str):
         """
         returns scale factors for a given level/era
@@ -132,7 +159,6 @@ class JERCorrector:
         sf = cset[jec_corr_key].evaluate(*input_variables)
         return ak.unflatten(sf, ak.num(self.events.Jet))
 
-    
     def get_jer_sf(self, variation: str):
         """
         returns jer scale factor
@@ -165,13 +191,12 @@ class JERCorrector:
         )
         return ak.unflatten(jersmear, ak.num(self.events.Jet))
 
-    
     def get_jets_for_met_t1(self):
         """
         return L123 and L1 jets needed for type-I MET corrections
         """
         # get L1, L2 and L3 jets pT
-        l1_sf = self.get_jec_sf(level="L1") 
+        l1_sf = self.get_jec_sf(level="L1")
         self.events["Jet", "pt_l1"] = l1_sf * self.events.Jet.pt_raw
 
         l2_sf = self.get_jec_sf(level="L2")
@@ -219,7 +244,6 @@ class JERCorrector:
         )
         return jets_L123, jets_L1
 
-    
     def apply_met_t1_corr(self):
         """
         Apply MET type-I correction (Propagation of Jet Energy Scale Corrections)
@@ -248,29 +272,27 @@ class JERCorrector:
         # update nominal MET
         self.events["MET", "pt"] = np.sqrt((met_px**2.0 + met_py**2.0))
         self.events["MET", "phi"] = np.arctan2(met_py, met_px)
-        
-    
+
     def apply_met_jer_corr(self):
         corrected_met_pt, corrected_met_phi = corrected_polar_met(
-            met_pt=self.events.MET.pt, 
-            met_phi=self.events.MET.phi, 
-            other_phi=self.events.Jet.phi, 
-            other_pt_old=self.events.Jet.pt_jec, 
-            other_pt_new=self.events.Jet.pt_jer, 
+            met_pt=self.events.MET.pt,
+            met_phi=self.events.MET.phi,
+            other_phi=self.events.Jet.phi,
+            other_pt_old=self.events.Jet.pt_jec,
+            other_pt_new=self.events.Jet.pt_jer,
         )
         # update nominal MET
         self.events["MET", "pt"] = corrected_met_pt
         self.events["MET", "phi"] = corrected_met_phi
-        
-        
+
     def apply_met_unclustered_energy_corr(self):
         """
         corrected_met_pt_up, corrected_met_phi_up = corrected_polar_met(
-            met_pt=self.events.MET.pt, 
-            met_phi=self.events.MET.phi, 
-            other_phi=self.events.Jet.phi, 
-            other_pt_old=self.events.Jet.pt_raw, 
-            other_pt_new=self.events.Jet.pt, 
+            met_pt=self.events.MET.pt,
+            met_phi=self.events.MET.phi,
+            other_phi=self.events.Jet.phi,
+            other_pt_old=self.events.Jet.pt_raw,
+            other_pt_new=self.events.Jet.pt,
             dx=self.events.MET.MetUnclustEnUpDeltaX,
             dy=self.events.MET.MetUnclustEnUpDeltaY,
             positive=True
