@@ -93,16 +93,35 @@ GluGluHToWWToLNuQQ:
   process: Higgs
   query: GluGluHToWWToLNuQQ_M-125_TuneCP5_13TeV_powheg_jhugen751_pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM
   xsec: 28.88
-MET:
+METB:
   is_mc: false
   process: Data
-  query:
-  - MET/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - MET/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - MET/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - MET/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - MET/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - MET/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  query: MET/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+METB:
+  is_mc: false
+  process: Data
+  query: MET/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+METC:
+  is_mc: false
+  process: Data
+  query: MET/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+METD:
+  is_mc: false
+  process: Data
+  query: MET/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+METE:
+  is_mc: false
+  process: Data
+  query: MET/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+METF:
+  iFs_mc: false
+  process: Data
+  query: MET/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
   xsec: null
 QCD_HT1000to1500:
   is_mc: true
@@ -269,27 +288,65 @@ ST_tW_top_5f_inclusiveDecays:
   process: SingleTop
   query: ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM
   xsec: 34.91
-SingleElectron:
+SingleElectronBver1:
   is_mc: false
   process: Data
-  query:
-  - SingleElectron/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleElectron/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleElectron/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleElectron/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleElectron/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleElectron/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  query: SingleElectron/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
   xsec: null
-SingleMuon:
+SingleElectronBver2:
   is_mc: false
   process: Data
-  query:
-  - SingleMuon/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleMuon/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleMuon/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleMuon/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleMuon/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - SingleMuon/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  query: SingleElectron/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleElectronC:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleElectronD:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleElectronE:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleElectronF:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonBver1:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonBver2:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonC:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonD:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonE:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+SingleMuonF:
+  is_mc: false
+  process: Data
+  query: SingleMuon/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
   xsec: null
 TTTo2L2Nu:
   is_mc: true
@@ -306,16 +363,35 @@ TTToSemiLeptonic:
   process: tt
   query: TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM
   xsec: 365.34
-Tau:
+TauBver1:
   is_mc: false
   process: Data
-  query:
-  - Tau/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  query: Tau/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+TauBver2:
+  is_mc: false
+  process: Data
+  query: Tau/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+TauC:
+  is_mc: false
+  process: Data
+  query: Tau/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+TauD:
+  is_mc: false
+  process: Data
+  query: Tau/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+TauE:
+  is_mc: false
+  process: Data
+  query: Tau/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
+  xsec: null
+TauF:
+  is_mc: false
+  process: Data
+  query: Tau/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD
   xsec: null
 VBFHToWWTo2L2Nu:
   is_mc: true
