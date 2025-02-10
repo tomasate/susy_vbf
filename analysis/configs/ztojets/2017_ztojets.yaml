@@ -1,13 +1,15 @@
 golden_json: analysis/data/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt
 hlt_paths:
-  - IsoMu27
+  - Mu50
+  - OldMu100
+  - TkMu100
 object_selection:
   muons:
     field: events.Muon
     cuts:
       min_pt: events.Muon.pt > 30
       eta: np.abs(events.Muon.eta) < 2.1
-      muons_id: tight
+      muons_id: highpt
       muons_iso: tight
   veto_muons:
     field: events.Muon
