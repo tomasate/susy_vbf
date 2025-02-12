@@ -15,6 +15,7 @@ from analysis.corrections.btag import BTagCorrector
 from analysis.corrections.muon import MuonCorrector
 from analysis.corrections.tau import TauCorrector
 from analysis.corrections.electron import ElectronCorrector
+from analysis.corrections.muon_highpt import MuonHighPtCorrector
 from analysis.corrections.met import apply_met_phi_corrections, update_met_jet_veto
 from analysis.selections import (
     ObjectSelector,
@@ -74,12 +75,12 @@ class ZToJets(processor.ProcessorABC):
             if is_mc:
                 apply_jer = True
             jerc_corrector = JERCorrector(
-                events=events, 
-                year=self.year, 
-                dataset=dataset, 
-                apply_jec=apply_jec, 
-                apply_jer=apply_jer, 
-                apply_jec_syst=apply_jec_syst, 
+                events=events,
+                year=self.year,
+                dataset=dataset,
+                apply_jec=apply_jec,
+                apply_jer=apply_jer,
+                apply_jec_syst=apply_jec_syst,
                 apply_jer_syst=apply_jer_syst
             )
             """
@@ -154,13 +155,18 @@ class ZToJets(processor.ProcessorABC):
                 electron_corrector.add_reco_weight("RecoBelow20")
 
                 # muon corrector
-                muon_corrector = MuonCorrector(
-                    events=events,
-                    weights=weights_container,
-                    year=year,
-                    variation=syst_var,
-                    id_wp=object_selection["muons"]["cuts"]["muons_id"],
-                    iso_wp=object_selection["muons"]["cuts"]["muons_iso"],
+                muon_corrector_args = {
+                    "events": events,
+                    "weights": weights_container,
+                    "year": year,
+                    "variation": syst_var,
+                    "id_wp": object_selection["muons"]["cuts"]["muons_id"],
+                    "iso_wp": object_selection["muons"]["cuts"]["muons_iso"],
+                }
+                muon_corrector = (
+                    MuonHighPtCorrector(**muon_corrector_args)
+                    if object_selection["muons"]["cuts"]["muons_id"] == "highpt"
+                    else MuonCorrector(**muon_corrector_args)
                 )
                 # add muon RECO weights
                 muon_corrector.add_reco_weight()
