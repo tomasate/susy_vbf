@@ -114,3 +114,12 @@ class ObjectSelector:
             behavior=vector.backends.awkward.behavior,
         )
         self.objects["met"] = met2D + muons2D
+        
+    def select_max_mass_dijet(self):
+        self.objects["max_dijet_mass"] = ak.max(self.objects['dijets'].p4.mass, axis=1)
+
+    def select_max_mass_dijet_eta(self):
+        dijets_idx = ak.local_index(self.objects["dijets"], axis=1)
+        max_mass_idx = ak.argmax(self.objects['dijets'].p4.mass, axis=1)
+        max_mass_dijet = self.objects["dijets"][max_mass_idx == dijets_idx]
+        self.objects["max_dijet_mass_eta"] = ak.firsts(np.abs(max_mass_dijet.j1.eta - max_mass_dijet.j2.eta))
