@@ -4,6 +4,9 @@ import argparse
 data_samples = {
     "ztojets": {
         "2017": ["SingleMuonB", "SingleMuonC", "SingleMuonD", "SingleMuonE", "SingleMuonF"],
+    },
+    "ztojets": {
+        "2018": ["SingleMuonA","SingleMuonB", "SingleMuonC", "SingleMuonD"],
     }
 }
 background_samples = [
@@ -100,6 +103,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     datasets = background_samples + data_samples[args.processor][args.year]
+    
     for dataset in datasets:
         cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {args.label} --nfiles {args.nfiles}"
         if args.submit:

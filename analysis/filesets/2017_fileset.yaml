@@ -93,15 +93,30 @@ GluGluHToWWToLNuQQ:
   process: Higgs
   query: GluGluHToWWToLNuQQ_M-125_TuneCP5_13TeV_powheg_jhugen751_pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
   xsec: 28.88
-MET:
+METB:
   is_mc: false
   process: Data
-  query:
-  - MET/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - MET/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - MET/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - MET/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - MET/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  query: MET/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+METC:
+  is_mc: false
+  process: Data
+  query: MET/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+METD:
+  is_mc: false
+  process: Data
+  query: MET/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+METE:
+  is_mc: false
+  process: Data
+  query: MET/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+METF:
+  is_mc: false
+  process: Data
+  query: MET/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   xsec: null
 QCD_HT1000to1500:
   is_mc: true
@@ -273,15 +288,30 @@ ST_tW_top_5f_inclusiveDecays:
   process: SingleTop
   query: ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
   xsec: 34.91
-SingleElectron:
+SingleElectronB:
   is_mc: false
   process: Data
-  query:
-  - SingleElectron/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleElectron/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleElectron/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - SingleElectron/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  query: SingleElectron/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleElectronC:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleElectronD:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleElectronE:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  xsec: null
+SingleElectronF:
+  is_mc: false
+  process: Data
+  query: SingleElectron/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   xsec: null
 SingleMuonB:
   is_mc: false
@@ -323,15 +353,26 @@ TTToSemiLeptonic:
   process: tt
   query: TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
   xsec: 365.34
-Tau:
+TauB:
   is_mc: false
   process: Data
-  query:
-  - Tau/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - Tau/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - Tau/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
-  - Tau/Run2017E-UL2017_MiniAODv2_NanoAODv9-v2/NANOAOD
-  - Tau/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+  query: Tau/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+TauC:
+  is_mc: false
+  process: Data
+  query: Tau/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+TauD:
+  is_mc: false
+  process: Data
+  query: Tau/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+TauE:
+  is_mc: false
+  process: Data
+  query: Tau/Run2017E-UL2017_MiniAODv2_NanoAODv9-v2/NANOAOD
+TauF:
+  is_mc: false
+  process: Data
+  query: Tau/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
   xsec: null
 VBFHToWWTo2L2Nu:
   is_mc: true
