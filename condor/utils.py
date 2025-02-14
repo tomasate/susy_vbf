@@ -20,7 +20,10 @@ def move_X509() -> str:
         raise RuntimeError(
             "x509 proxy could not be parsed, try creating it with 'voms-proxy-init --voms cms'"
         ) from err
-    x509_path = f"{Path.home()}/private/{x509_localpath.split('/')[-1]}"
+    user = os.environ["USER"]
+    x509_path = (
+        f"/afs/cern.ch/user/{user[0]}/{user}/private/{x509_localpath.split('/')[-1]}"
+    )
     subprocess.run(["cp", x509_localpath, x509_path])
     return x509_path
 
