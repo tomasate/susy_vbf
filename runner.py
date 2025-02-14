@@ -4,8 +4,6 @@ import argparse
 data_samples = {
     "ztojets": {
         "2017": ["SingleMuonB", "SingleMuonC", "SingleMuonD", "SingleMuonE", "SingleMuonF"],
-    },
-    "ztojets": {
         "2018": ["SingleMuonA","SingleMuonB", "SingleMuonC", "SingleMuonD"],
     }
 }
