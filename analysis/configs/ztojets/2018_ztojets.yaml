@@ -1,13 +1,15 @@
 golden_json: analysis/data/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt
 hlt_paths:
-  - IsoMu24
+  - Mu50
+  - OldMu100
+  - TkMu100
 object_selection:
   muons:
     field: events.Muon
     cuts:
       min_pt: events.Muon.pt > 30
       eta: np.abs(events.Muon.eta) < 2.1
-      muons_id: tight
+      muons_id: highpt
       muons_iso: tight
   veto_muons:
     field: events.Muon
@@ -58,6 +60,9 @@ object_selection:
       jets_electrons_dr: delta_r_mask(events.Jet, objects['electrons'], 0.4)
       jets_muons_dr: delta_r_mask(events.Jet, objects['muons'], 0.4)
       jets_taus_dr: delta_r_mask(events.Jet, objects['taus'], 0.4)
+  met_before:
+    field: events.MET
+    cuts: null
   met:
     field: select_met
     cuts: null
@@ -72,6 +77,12 @@ object_selection:
       delta_eta: np.abs(objects['dijets'].j1.eta - objects['dijets'].j2.eta) > 3.8
       opp_charge: objects['dijets'].j1.eta * objects['dijets'].j2.eta < 0
       max_mass: objects['dijets'].p4.mass > 500
+  max_dijet_mass:
+    field: select_max_mass_dijet
+    cuts: null
+  max_dijets_mass_eta:
+    field: select_max_mass_dijet_eta
+    cuts: null
 event_selection:
   selections:
     goodvertex: events.PV.npvsGood > 0
@@ -79,10 +90,9 @@ event_selection:
     trigger: get_trigger_mask(events, hlt_paths)
     trigger_match: get_trigger_match_mask(events, hlt_paths)
     metfilters: get_metfilters_mask(events, year)
-    hemcleaning: get_hemcleaning_mask(events)
     dy_stitching: get_stitching_mask(events, dataset, 'DYJetsToLL_inclusive', 70)
     w_stitching: get_stitching_mask(events, dataset, 'WJetsToLNu_inclusive', 100)
-    met: objects['met'].pt > 250
+    met_250: objects['met'].pt > 250
     two_muons: ak.num(objects['muons']) == 2
     one_dimuon: ak.num(objects['dimuons']) == 1
     muon_veto: ak.num(objects['veto_muons']) == 0
@@ -100,7 +110,7 @@ event_selection:
       - metfilters
       - dy_stitching
       - w_stitching
-      - met
+      - met_250
       - two_muons
       - one_dimuon
       - muon_veto
@@ -115,7 +125,7 @@ event_selection:
       - metfilters
       - dy_stitching
       - w_stitching
-      - met
+      - met_250
       - two_muons
       - one_dimuon
       - muon_veto
@@ -264,7 +274,14 @@ histogram_config:
         - 3800
         - 5000
       label: Largest $m(jj)$ [GeV]
-      expression: ak.max(objects['dijets'].p4.mass, axis=1)
+      expression: objects['max_dijet_mass']
+    dijet_eta:
+      type: Regular
+      bins: 50
+      start: 0
+      stop: 10
+      label: $|\Delta\eta(jj)|$
+      expression: objects['max_dijet_mass_eta']
     met:
       type: Variable
       edges:
@@ -284,6 +301,48 @@ histogram_config:
         - 1000
       label: $p_T^{miss}$ [GeV]
       expression: objects['met'].pt
+    met_before:
+      type: Variable
+      edges:
+        - 0
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+        - 60
+        - 70
+        - 80
+        - 90
+        - 100
+        - 110
+        - 120
+        - 140
+        - 160
+        - 170
+        - 180
+        - 190
+        - 200
+        - 210
+        - 220
+        - 230
+        - 240
+        - 250
+        - 260
+        - 270
+        - 280
+        - 290
+        - 300
+        - 320
+        - 340
+        - 360
+        - 380
+        - 400
+        - 450
+        - 500
+        - 1000
+      label: Raw $p_T^{miss}$ [GeV]
+      expression: objects['met_before'].pt
   layout:
     muons:
       - muon_pt
@@ -300,5 +359,7 @@ histogram_config:
       - jet_multiplicity
     dijets:
       - dijet_mass
+      - dijet_eta
     met:
       - met
+      - met_before
