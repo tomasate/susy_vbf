@@ -12,7 +12,7 @@ def main(args):
     main_dir = Path.cwd()
     fileset_path = Path(f"{main_dir}/analysis/filesets")
     with open(f"{fileset_path}/{args.year}_fileset.yaml", "r") as f:
-        datasets = yaml.safe_load(f)#[f"{args.year}_UL"]
+        datasets = yaml.safe_load(f)
 
     # get jobs done
     jobs_done = []
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         "--output_path",
         dest="output_path",
         type=str,
-        #default="/eos/user/t/tatehort/susy_vbf/outs"
+        #default="/eos/user/t/tatehort/susy_vbf/outs",
         help="path to the 'outs' folder",
     )
     parser.add_argument(
@@ -91,29 +91,15 @@ if __name__ == "__main__":
         "--processor",
         dest="processor",
         type=str,
-        default="susy",
+        default="ztojets",
         help="processor to be used",
-    )
-    parser.add_argument(
-        "--channel",
-        dest="channel",
-        type=str,
-        default="",
-        help="channel to be processed {'2b1l', '1b1e1mu', '1b1l'}",
-    )
-    parser.add_argument(
-        "--lepton_flavor",
-        dest="lepton_flavor",
-        type=str,
-        default="",
-        help="lepton flavor to be processed {'mu', 'ele'}",
     )
     parser.add_argument(
         "--year",
         dest="year",
         type=str,
         default="2017",
-        help="year of the data {2016APV, 2016, 2017, 2018} (default 2017)",
+        help="year of the data {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)",
     )
     parser.add_argument(
         "--resubmit",
