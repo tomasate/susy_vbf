@@ -13,84 +13,30 @@ ERAS = {
     "2018": ["A", "B", "C", "D"],
 }
 
-SITES = {
-    "2016preVFP": [
-        "T3_US_FNALLPC",
-        "T1_US_FNAL_Disk",
-        "T2_US_Vanderbilt",
-        "T2_US_Purdue",
-        "T2_US_Nebraska",
-        "T2_DE_DESY",
-        "T2_BE_IIHE",
-        "T2_CH_CERN",
-        "T1_DE_KIT_Disk",
-        "T2_DE_RWTH",
-        "T2_BE_UCL",
-        "T1_UK_RAL_Disk",
-        "T1_FR_CCIN2P3_Disk"
-        "T2_RU_JINR",
-        "T2_UK_London_IC",
-        "T1_FR_CCIN2P3_Disk"
-    ],
-    "2016postVFP": [
-        "T3_US_FNALLPC",
-        "T1_US_FNAL_Disk",
-        "T2_US_Vanderbilt",
-        "T2_US_Purdue",
-        "T2_US_Nebraska",
-        "T2_DE_DESY",
-        "T2_BE_IIHE",
-        "T2_CH_CERN",
-        "T1_DE_KIT_Disk",
-        "T2_DE_RWTH",
-        "T2_BE_UCL",
-        "T1_UK_RAL_Disk",
-        "T1_FR_CCIN2P3_Disk"
-        "T2_RU_JINR",
-        "T2_UK_London_IC",
-        "T1_FR_CCIN2P3_Disk"
-    ],
-    "2017": [
-        "T3_US_FNALLPC",
-        "T1_US_FNAL_Disk",
-        "T2_US_Vanderbilt",
-        "T2_US_Purdue",
-        "T2_US_Nebraska",
-        "T2_DE_DESY",
-        "T2_BE_IIHE",
-        "T2_CH_CERN",
-        "T1_DE_KIT_Disk",
-        "T2_DE_RWTH",
-        "T2_BE_UCL",
-        "T1_UK_RAL_Disk",
-        "T1_FR_CCIN2P3_Disk"
-        "T2_RU_JINR",
-        "T2_UK_London_IC",
-        "T1_FR_CCIN2P3_Disk",
-        "T3_CH_PSI",
-        "T3_CH_PSI",
-        "T2_ES_CIEMAT"
-    ],
-    "2018": [
-        "T3_US_FNALLPC",
-        "T1_US_FNAL_Disk",
-        "T2_US_Vanderbilt",
-        "T2_US_Purdue",
-        "T2_US_Nebraska",
-        "T2_DE_DESY",
-        "T2_BE_IIHE",
-        "T2_CH_CERN",
-        "T1_DE_KIT_Disk",
-        "T2_DE_RWTH",
-        "T2_BE_UCL",
-        "T1_UK_RAL_Disk",
-        "T1_FR_CCIN2P3_Disk"
-        "T2_RU_JINR",
-        "T2_UK_London_IC",
-        "T1_FR_CCIN2P3_Disk",
-        "T2_EE_Estonia"
-    ],
-}
+SITES = [
+    "T1_US_FNAL_Disk",
+    "T1_DE_KIT_Disk",
+    "T1_UK_RAL_Disk",
+    "T1_FR_CCIN2P3_Disk",
+    "T1_FR_CCIN2P3_Disk",
+    "T2_US_Vanderbilt",
+    "T2_US_Purdue",
+    "T2_US_Nebraska",
+    "T2_DE_DESY",
+    "T2_BE_IIHE",
+    "T2_CH_CERN",
+    "T2_DE_RWTH",
+    "T2_BE_UCL",
+    "T2_HU_Budapest",
+    "T2_RU_JINR",
+    "T2_UK_London_IC",
+    "T2_ES_CIEMAT",
+    "T2_CH_CSCS",
+    "T2_IT_Rome",
+    "T2_EE_Estonia",
+    "T3_US_FNALLPC",
+    "T3_CH_PSI",
+]
 
 def main(args):
     # open dataset configs
@@ -122,7 +68,7 @@ def main(args):
         # the dataset definition is passed to a DataDiscoveryCLI
         ddc = DataDiscoveryCLI()
         # set the allow sites to look for replicas
-        ddc.do_allowlist_sites(SITES[year])
+        ddc.do_allowlist_sites(SITES)
         # query rucio and get replicas
         ddc.load_dataset_definition(
             dataset_definition,
