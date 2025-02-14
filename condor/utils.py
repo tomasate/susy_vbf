@@ -6,6 +6,7 @@ from pathlib import Path
 
 def move_X509() -> str:
     """move x509 proxy file from /tmp to /afs/private. Returns the afs path"""
+    user = subprocess.check_output("whoami", shell=True, text=True).strip()
     try:
         x509_localpath = (
             [
@@ -20,7 +21,8 @@ def move_X509() -> str:
         raise RuntimeError(
             "x509 proxy could not be parsed, try creating it with 'voms-proxy-init --voms cms'"
         ) from err
-    x509_path = f"{Path.home()}/private/{x509_localpath.split('/')[-1]}"
+    #x509_path = f"{Path.home()}/private/{x509_localpath.split('/')[-1]}"
+    x509_path = f"/afs/cern.ch/user/{user[0]}/{user}/private/{x509_localpath.split('/')[-1]}"
     subprocess.run(["cp", x509_localpath, x509_path])
     return x509_path
 
