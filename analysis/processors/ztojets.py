@@ -67,7 +67,7 @@ class ZToJets(processor.ProcessorABC):
             # -------------------------------------------------------------
             # object corrections
             # -------------------------------------------------------------
-            """
+            
             apply_jec = True
             apply_jer = False
             apply_jec_syst = False
@@ -83,10 +83,10 @@ class ZToJets(processor.ProcessorABC):
                 apply_jec_syst=apply_jec_syst,
                 apply_jer_syst=apply_jer_syst
             )
-            """
+            
             if is_mc:
                 # apply JEC/JER corrections to jets (in data, the corrections are already applied)
-                apply_jet_corrections(events, year)
+                #apply_jet_corrections(events, year)
                 # apply energy corrections to taus (only to MC)
                 apply_tau_energy_scale_corrections(
                     events=events, year=year, variation=syst_var
