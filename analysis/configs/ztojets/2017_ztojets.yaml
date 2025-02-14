@@ -280,7 +280,7 @@ histogram_config:
       bins: 50
       start: 0
       stop: 10
-      label: $\Delta\eta(jj)$
+      label: $|\Delta\eta(jj)|$
       expression: objects['max_dijet_mass_eta']
     met:
       type: Variable
