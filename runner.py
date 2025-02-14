@@ -3,8 +3,32 @@ import argparse
 
 data_samples = {
     "ztojets": {
-        "2017": ["SingleMuonB", "SingleMuonC", "SingleMuonD", "SingleMuonE", "SingleMuonF"],
-        "2018": ["SingleMuonA","SingleMuonB", "SingleMuonC", "SingleMuonD"],
+        "2016preVFP": [
+            "SingleMuonBver1",
+            "SingleMuonBver2",
+            "SingleMuonC",
+            "SingleMuonD",
+            "SingleMuonE",
+            "SingleMuonF",
+        ],
+        "2016postVFP": [
+            "SingleMuonF", 
+            "SingleMuonG", 
+            "SingleMuonH"
+        ],
+        "2017": [
+            "SingleMuonB",
+            "SingleMuonC",
+            "SingleMuonD",
+            "SingleMuonE",
+            "SingleMuonF",
+        ],
+        "2018": [
+            "SingleMuonA", 
+            "SingleMuonB", 
+            "SingleMuonC", 
+            "SingleMuonD"
+        ]
     }
 }
 background_samples = [
@@ -72,7 +96,7 @@ if __name__ == "__main__":
         dest="year",
         type=str,
         default="2017",
-        help="dataset year {2017} (default 2017)",
+        help="dataset year {2016preVFP, 2016postVFP, 2017, 2018} (default 2017)",
     )
     parser.add_argument(
         "--nfiles",
@@ -101,7 +125,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     datasets = background_samples + data_samples[args.processor][args.year]
-    
+
     for dataset in datasets:
         cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {args.label} --nfiles {args.nfiles}"
         if args.submit:
