@@ -136,5 +136,10 @@ if __name__ == "__main__":
         action="store_true",
         help="Enable saving outputs to /eos",
     )
+    parser.add_argument(
+        "--do_systematics",
+        action="store_true",
+        help="Enable applying systematics",
+    )
     args = parser.parse_args()
     main(args)
