@@ -9,7 +9,9 @@ from analysis.processors.ztojets import ZToJets
 
 def main(args):
     processors = {
-        "ztojets": ZToJets(year=args.year, flow=eval(args.flow)),
+        "ztojets": ZToJets(
+            year=args.year, flow=eval(args.flow), do_systematics=args.do_systematics
+        ),
     }
     t0 = time.monotonic()
     out = processor.run_uproot_job(
