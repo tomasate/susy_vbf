@@ -88,5 +88,10 @@ if __name__ == "__main__":
         default=20,
         help="number of root files to include in each dataset partition (default 20)",
     )
+    parser.add_argument(
+        "--do_systematics",
+        action="store_true",
+        help="Enable applying systematics",
+    )
     args = parser.parse_args()
     main(args)

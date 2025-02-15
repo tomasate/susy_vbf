@@ -68,5 +68,10 @@ if __name__ == "__main__":
         default="True",
         help="whether to include underflow/overflow to first/last bin {True, False}",
     )
+    parser.add_argument(
+        "--do_systematics",
+        action="store_true",
+        help="Enable applying systematics",
+    )
     args = parser.parse_args()
     main(args)

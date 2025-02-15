@@ -1,7 +1,7 @@
 import os
 import argparse
 
-data_samples = {
+DATA_SAMPLES = {
     "ztojets": {
         "2016preVFP": [
             "SingleMuonBver1",
@@ -31,7 +31,7 @@ data_samples = {
         ]
     }
 }
-background_samples = [
+MC_SAMPLES = [
     # DYJetsToLL
     "DYJetsToLL_M-4to50_HT-100to200",
     "DYJetsToLL_M-4to50_HT-200to400",
@@ -82,6 +82,20 @@ background_samples = [
 ]
 
 
+def main(args):
+    datasets = MC_SAMPLES + DATA_SAMPLES[args.processor][args.year]
+    for dataset in datasets:
+        cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {args.label} --nfiles {args.nfiles}"
+        if args.submit:
+            cmd += " --submit"
+        if args.eos:
+            cmd += " --eos"
+        if args.do_systematics:
+            cmd += " --do_systematics"
+        os.system(cmd)
+    
+    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -123,13 +137,4 @@ if __name__ == "__main__":
         help="Enable saving outputs to /eos",
     )
     args = parser.parse_args()
-
-    datasets = background_samples + data_samples[args.processor][args.year]
-
-    for dataset in datasets:
-        cmd = f"python3 submit_condor.py --processor {args.processor} --year {args.year} --dataset {dataset} --label {args.label} --nfiles {args.nfiles}"
-        if args.submit:
-            cmd += " --submit"
-        if args.eos:
-            cmd += " --eos"
-        os.system(cmd)
+    main(args)
