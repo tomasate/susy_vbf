@@ -23,7 +23,7 @@ class Plotter:
         processed_histograms: dict,
         year: str,
         lumi: int,
-        output_dir: str = None,
+        output_dir: str,
     ):
         self.processor = processor
         self.processed_histograms = processed_histograms
@@ -257,6 +257,7 @@ class Plotter:
         yratio_limits: str = None,
         log_scale: bool = False,
         savefig: bool = True,
+        extension: str = "png",
     ):
         setup_logger(self.output_dir)
         # set plot params
@@ -349,6 +350,6 @@ class Plotter:
             if not output_path.exists():
                 output_path.mkdir(parents=True, exist_ok=True)
             fig.savefig(
-                f"{str(output_path)}/{self.processor}_{variable}_{category}_{self.year}.png"
+                f"{str(output_path)}/{self.processor}_{variable}_{category}_{self.year}.{extension}"
             )
         plt.close()
