@@ -13,7 +13,6 @@ from analysis.postprocess.utils import print_header, setup_logger
 def main(args):
     if not args.output_dir:
         args.output_dir = get_output_directory(vars(args))
-
     setup_logger(args.output_dir)
 
     # load and save processor config
@@ -48,7 +47,8 @@ def main(args):
                 category=category,
                 yratio_limits=args.yratio_limits,
                 log_scale=args.log_scale,
-                savefig=True,
+                savefig=args.savefig,
+                extension=args.extension,
             )
 
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         dest="yratio_limits",
         type=float,
         nargs=2,
-        default=(0, 2),
+        default=(0.5, 1.5),
         help="Set y-axis ratio limits as a tuple (e.g., --yratio_limits 0.5 1.5) (default 0 2)",
     )
     parser.add_argument(
@@ -98,6 +98,18 @@ if __name__ == "__main__":
         type=str,
         default="",
         help="Path to the outputs directory (optional)",
+    )
+    parser.add_argument(
+        "--savefig",
+        action="store_true",
+        help="Enable plot saving",
+    )
+    parser.add_argument(
+        "--extension",
+        dest="extension",
+        type=str,
+        default="png",
+        help="extension to be used for plotting {png, pdf}",
     )
     args = parser.parse_args()
     main(args)
