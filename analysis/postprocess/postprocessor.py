@@ -4,9 +4,10 @@ import logging
 import numpy as np
 import pandas as pd
 from pathlib import Path
+from coffea.util import load
 from coffea.processor import accumulate
 from analysis.configs import ProcessorConfigBuilder
-from analysis.postprocess.utils import open_output, print_header, df_to_latex
+from analysis.postprocess.utils import print_header, df_to_latex
 
 
 class Postprocessor:
@@ -92,7 +93,7 @@ class Postprocessor:
         group and accumulate output files by sample
         """
         logging.info(f"reading outputs from {self.output_dir}")
-        extension = ".pkl"
+        extension = ".coffea"
         output_files = glob.glob(f"{self.output_dir}/*{extension}", recursive=True)
         n_output_files = len(output_files)
         assert n_output_files != 0, "No output files found"
@@ -125,7 +126,7 @@ class Postprocessor:
             grouped_histograms[sample] = []
             grouped_metadata[sample] = {}
             for fname in grouped_outputs[sample]:
-                output = open_output(fname)
+                output = load(fname)
                 if output:
                     # group histograms by sample
                     grouped_histograms[sample].append(output["histograms"])

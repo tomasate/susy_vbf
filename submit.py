@@ -1,8 +1,8 @@
 import json
 import time
-import pickle
 import argparse
 from coffea import processor
+from coffea.util import save
 from humanfriendly import format_timespan
 from analysis.processors.ztojets import ZToJets
 
@@ -24,8 +24,7 @@ def main(args):
     exec_time = format_timespan(time.monotonic() - t0)
 
     print(f"Execution time: {exec_time}")
-    with open(f"{args.output_path}/{args.dataset_key}.pkl", "wb") as handle:
-        pickle.dump(out, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    save(out, f"{args.output_path}/{args.dataset_key}.coffea")
 
 
 if __name__ == "__main__":
